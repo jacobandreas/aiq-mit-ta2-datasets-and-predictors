@@ -54,8 +54,8 @@ from typing import List, Optional
 import numpy as np
 import pandas as pd
 
-from magnet.instance_predictor import InstancePredictor, InstancePrediction
-from magnet.data_splits import TrainSplit, SequesteredTestSplit
+from magnet.instance_predictor import InstancePredictor, InstancePrediction, _reindex_split
+from magnet.data_splits import TrainSplit, TestSplit, SequesteredTestSplit
 
 
 # ---------------------------------------------------------------------------
@@ -245,6 +245,43 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
     # ------------------------------------------------------------------
     # InstancePredictor interface
     # ------------------------------------------------------------------
+
+    def prepare_all_dataframes(self, helm_runs):
+        """Split runs deterministically by name: runs whose directory name
+        contains '_train' (i.e. split_config=cross_lingual_train) become the
+        train split; all others become the eval split."""
+        from magnet.backends.helm.helm_outputs import HelmRuns
+
+        coerced_runs = list(HelmRuns.coerce(helm_runs))
+
+        train_runs = [r for r in coerced_runs if "_train" in r.path.name]
+        eval_runs  = [r for r in coerced_runs if "_train" not in r.path.name]
+
+        if not train_runs or not eval_runs:
+            names = [r.path.name for r in coerced_runs]
+            raise RuntimeError(
+                f"Expected runs with and without '_train' in name; got: {names}"
+            )
+
+        def _concat(dfs):
+            return pd.concat(dfs, ignore_index=True)
+
+        train_split = TrainSplit(
+            run_specs=_concat([r.run_spec() for r in train_runs]),
+            scenario_state=_concat([r.scenario_state() for r in train_runs]),
+            stats=_concat([r.stats() for r in train_runs]),
+            per_instance_stats=_concat([r.per_instance_stats() for r in train_runs]),
+        )
+        test_split = TestSplit(
+            run_specs=_concat([r.run_spec() for r in eval_runs]),
+            scenario_state=_concat([r.scenario_state() for r in eval_runs]),
+            stats=_concat([r.stats() for r in eval_runs]),
+            per_instance_stats=_concat([r.per_instance_stats() for r in eval_runs]),
+        )
+
+        _reindex_split(train_split)
+        _reindex_split(test_split)
+        return train_split, test_split
 
     def predict(
         self,

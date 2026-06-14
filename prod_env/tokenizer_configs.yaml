@@ -1,0 +1,8 @@
+tokenizer_configs:
+  - name: huggingface/Qwen3-4B
+    tokenizer_spec:
+      class_name: helm.tokenizers.huggingface_tokenizer.HuggingFaceTokenizer
+      args:
+        pretrained_model_name_or_path: /raid/lingo/models/Qwen3-4B
+    end_of_text_token: "<|im_end|>"
+    prefix_token: ""

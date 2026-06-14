@@ -1,0 +1,10 @@
+model_deployments:
+  - name: huggingface/Qwen3-4B
+    model_name: huggingface/Qwen3-4B
+    tokenizer_name: huggingface/Qwen3-4B
+    max_sequence_length: 131072
+    client_spec:
+      class_name: helm.clients.huggingface_client.HuggingFaceClient
+      args:
+        pretrained_model_name_or_path: /raid/lingo/models/Qwen3-4B
+        apply_chat_template: false

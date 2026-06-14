@@ -1,12 +1,12 @@
 title: "CircuitOverlap Predictor — Qwen3 / arithmetic_fixed"
 description: |
-  The circuit overlap predictor (circuit_overlap) should achieve above-chance
-  AUC when predicting per-instance accuracy on the arithmetic_fixed
-  cross_lingual evaluation split for Qwen3 base models.
+  The circuit overlap predictor should achieve above-chance AUC when
+  predicting per-instance accuracy on the arithmetic_fixed cross_lingual
+  evaluation split for Qwen3 base models.
 
-  The predictor is fit on the val split (english+symbolic examples) and
-  evaluated on the test split (spanish+italian examples).  AUC is computed
-  against ground-truth exact-match labels.
+  The predictor is fit on the HELM TRAIN split (english+symbolic examples)
+  and evaluated on the HELM TEST split (spanish+italian examples).  AUC
+  is computed against ground-truth exact-match labels.
 
 version: 1.0
 
@@ -35,12 +35,10 @@ links:
 
 pipeline:
   run_circuit_overlap:
-    executable: 'python -u magnet_adapter/run_predictor_card.py'
+    executable: '/raid/lingo/jda/anaconda3/envs/darpa3-helm/bin/python -u magnet_adapter/run_predictor_card.py'
     algo_params:
-      runs_dir: '/raid/lingo/jda/code/darpa3/runs'
-      domain: 'arithmetic_fixed'
-      split_config: 'cross_lingual'
-      model_family: 'qwen'
+      helm_runs_path: './benchmark_output'
+      run_spec_pattern: 'arithmetic_fixed*Qwen*'
       models_root: '/raid/lingo/models'
       k_fraction: 0.01
       batch_size: 4
