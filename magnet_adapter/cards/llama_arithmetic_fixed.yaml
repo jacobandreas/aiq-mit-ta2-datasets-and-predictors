@@ -1,0 +1,106 @@
+title: "Cross-Lingual Arithmetic Consistency for Llama 3.2 Family"
+description: |
+  Performance on arithmetic_fixed cross_lingual (train: english+symbolic,
+  test: spanish+italian) should be consistent within a bound of variation
+  across the Llama 3.2 model family.
+
+version: 1.0
+
+organizations:
+  - MIT
+
+submitter:
+  name: MIT TA2 Team
+  email: jda@mit.edu
+
+tags:
+  - llama
+  - helm
+  - arithmetic
+  - cross_lingual
+  - generalization
+
+links:
+  - title: "aiq-mit-ta2"
+    url: "https://github.com/mit-ll/aiq-mit-ta2"
+    type: "software"
+  - title: "arithmetic_fixed dataset"
+    url: "https://github.com/mit-ll/aiq-mit-ta2"
+    type: "dataset"
+
+claim:
+  python: |
+    assert abs(comp_score - base_score) < threshold, f"{comp_model} score ({comp_score:.2f}) exceeds consistency bound on {base_model} ({base_score:.2f})"
+
+symbols:
+  threshold:
+    type: float
+    value: 0.15
+
+  base_model:
+    sweep:
+      - meta-llama/Llama-3.2-1B
+      - meta-llama/Llama-3.2-3B
+
+  base_score:
+    type: float
+    depends_on:
+      - base_model
+      - exact_match_scores
+    python: |
+      base_score = [(name, score) for name, score in exact_match_scores if name == base_model][0][1]
+
+  comp_model:
+    sweep:
+      - meta-llama/Llama-3.2-1B
+      - meta-llama/Llama-3.2-3B
+
+  comp_score:
+    type: float
+    depends_on:
+      - comp_model
+      - exact_match_scores
+    python: |
+      comp_score = [(name, score) for name, score in exact_match_scores if name == comp_model][0][1]
+
+  helm_runs_path:
+    type: str
+    value: './benchmark_output'
+
+  run_specs:
+    type: object
+    depends_on:
+      - helm_runs_path
+    python: |
+      import ubelt as ub
+      from magnet.backends.helm.helm_outputs import HelmOutputs
+      from magnet.backends.helm.helm_outputs import HelmSuiteRuns
+
+      helm_data = HelmOutputs(ub.Path(helm_runs_path))
+
+      runs = []
+      for suite in helm_data.suites():
+        runs.extend(suite.runs("arithmetic_fixed*model=meta-llama*").paths)
+
+      run_specs = HelmSuiteRuns.coerce(runs)
+
+  exact_match_scores:
+    type: List[Tuple[str, float]]
+    depends_on:
+      - run_specs
+    python: |
+      run_stats = run_specs.stats()
+
+      run_stats = run_stats[
+          (run_stats['stats.name.name'] == 'exact_match') &
+          (run_stats['stats.name.perturbation.computed_on'].isna()) &
+          (run_stats['stats.name.split'] == 'test')]
+
+      helm_models = run_specs.run_spec().set_index('run_spec.name')['run_spec.adapter_spec.model'].to_dict()
+      run_stats['model'] = run_stats['run_spec.name'].map(helm_models)
+
+      run_stats = run_stats[(run_stats['model'] == base_model) | (run_stats['model'] == comp_model)]
+
+      exact_match_scores_df = run_stats.groupby('model')['stats.mean'].mean()
+
+      exact_match_scores = list(exact_match_scores_df.items())
