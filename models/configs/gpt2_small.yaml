@@ -1,0 +1,18 @@
+family: gpt2_small
+model_name_or_path: gpt2
+tokenizer_name_or_path: gpt2
+zero_shot: true
+max_new_tokens: 32
+eval_batch_size: 32
+dtype: float32
+training:
+  lr: 5.0e-5
+  batch_size: 32
+  max_epochs: 20
+  eval_steps: 200
+  val_eval_items: 200
+  patience: 5
+  warmup_steps: 100
+  gradient_accumulation_steps: 1
+  max_grad_norm: 1.0
+  weight_decay: 0.01

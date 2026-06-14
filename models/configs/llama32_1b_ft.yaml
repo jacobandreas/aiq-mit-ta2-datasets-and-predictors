@@ -1,0 +1,18 @@
+family: llama32_1b_ft
+model_name_or_path: meta-llama/Llama-3.2-1B-Instruct
+tokenizer_name_or_path: meta-llama/Llama-3.2-1B-Instruct
+zero_shot: false
+max_new_tokens: 32
+eval_batch_size: 8
+dtype: bfloat16
+training:
+  lr: 2.0e-5
+  batch_size: 8
+  max_epochs: 10
+  eval_steps: 200
+  val_eval_items: 200
+  patience: 3
+  warmup_steps: 50
+  gradient_accumulation_steps: 4
+  max_grad_norm: 1.0
+  weight_decay: 0.01

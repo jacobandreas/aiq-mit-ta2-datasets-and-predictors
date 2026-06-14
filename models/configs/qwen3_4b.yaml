@@ -1,0 +1,18 @@
+family: qwen3_4b
+model_name_or_path: Qwen/Qwen3-4B
+tokenizer_name_or_path: Qwen/Qwen3-4B
+zero_shot: true
+max_new_tokens: 32
+eval_batch_size: 8
+dtype: bfloat16
+training:
+  lr: 1.0e-5
+  batch_size: 4
+  max_epochs: 10
+  eval_steps: 200
+  val_eval_items: 200
+  patience: 3
+  warmup_steps: 50
+  gradient_accumulation_steps: 8
+  max_grad_norm: 1.0
+  weight_decay: 0.01

@@ -1,0 +1,508 @@
+{"id": "prob_000006", "x": "7 + 5 = 12\n19 + 86 - 57 =", "y": "48", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000012", "x": "7 + 5 = 12\n28 - 10 =", "y": "18", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000024", "x": "7 + 5 = 12\n287 - 287 + 649 =", "y": "649", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000026", "x": "7 + 5 = 12\n50 + 58 - 82 =", "y": "26", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000085", "x": "7 + 5 = 12\n69 - 20 + 30 =", "y": "79", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000088", "x": "7 + 5 = 12\n900 + 981 =", "y": "1881", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000095", "x": "7 + 5 = 12\n79 + 65 + 23 =", "y": "167", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000099", "x": "7 + 5 = 12\n39 + 24 =", "y": "63", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000101", "x": "7 + 5 = 12\n92 - 29 + 45 =", "y": "108", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000105", "x": "7 + 5 = 12\n59 - 50 =", "y": "9", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000110", "x": "7 + 5 = 12\n49 + 44 =", "y": "93", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000124", "x": "7 + 5 = 12\n683 - 354 =", "y": "329", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000143", "x": "7 + 5 = 12\n756 + 471 =", "y": "1227", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000147", "x": "7 + 5 = 12\n82 + 65 =", "y": "147", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000160", "x": "7 + 5 = 12\n140 + 546 - 230 =", "y": "456", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000170", "x": "7 + 5 = 12\n999 - 384 =", "y": "615", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000173", "x": "7 + 5 = 12\n45 + 35 =", "y": "80", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000183", "x": "7 + 5 = 12\n257 - 221 + 351 =", "y": "387", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000190", "x": "7 + 5 = 12\n33 + 35 + 52 =", "y": "120", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000209", "x": "7 + 5 = 12\n54 - 13 + 67 =", "y": "108", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000225", "x": "7 + 5 = 12\n95 - 11 + 20 =", "y": "104", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000233", "x": "7 + 5 = 12\n47 - 22 + 12 =", "y": "37", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000235", "x": "7 + 5 = 12\n76 - 39 =", "y": "37", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000260", "x": "7 + 5 = 12\n41 + 11 - 42 =", "y": "10", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000262", "x": "7 + 5 = 12\n768 - 253 =", "y": "515", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000282", "x": "7 + 5 = 12\n18 + 19 =", "y": "37", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000300", "x": "7 + 5 = 12\n972 + 795 =", "y": "1767", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000314", "x": "7 + 5 = 12\n434 + 305 - 307 =", "y": "432", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000329", "x": "7 + 5 = 12\n57 - 20 =", "y": "37", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000348", "x": "7 + 5 = 12\n48 + 20 - 21 =", "y": "47", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000352", "x": "7 + 5 = 12\n409 - 803 + 633 =", "y": "239", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000356", "x": "7 + 5 = 12\n477 + 757 + 839 =", "y": "2073", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000372", "x": "7 + 5 = 12\n978 - 354 =", "y": "624", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000377", "x": "7 + 5 = 12\n42 + 37 - 12 =", "y": "67", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000388", "x": "7 + 5 = 12\n176 - 838 + 856 =", "y": "194", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000390", "x": "7 + 5 = 12\n414 + 342 - 645 =", "y": "111", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000394", "x": "7 + 5 = 12\n65 - 13 - 14 =", "y": "38", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000406", "x": "7 + 5 = 12\n23 + 72 + 58 =", "y": "153", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000408", "x": "7 + 5 = 12\n671 + 860 + 511 =", "y": "2042", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000415", "x": "7 + 5 = 12\n14 + 74 =", "y": "88", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000425", "x": "7 + 5 = 12\n977 - 661 + 848 =", "y": "1164", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000436", "x": "7 + 5 = 12\n779 - 615 =", "y": "164", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000457", "x": "7 + 5 = 12\n917 - 694 =", "y": "223", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000458", "x": "7 + 5 = 12\n546 + 285 - 257 =", "y": "574", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000464", "x": "7 + 5 = 12\n197 + 693 =", "y": "890", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000467", "x": "7 + 5 = 12\n752 - 638 + 752 =", "y": "866", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000470", "x": "7 + 5 = 12\n65 + 62 =", "y": "127", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000493", "x": "7 + 5 = 12\n68 - 27 - 21 =", "y": "20", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000513", "x": "7 + 5 = 12\n884 - 754 =", "y": "130", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000521", "x": "7 + 5 = 12\n19 + 59 + 22 =", "y": "100", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000533", "x": "7 + 5 = 12\n121 + 491 - 569 =", "y": "43", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000539", "x": "7 + 5 = 12\n797 - 723 =", "y": "74", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000549", "x": "7 + 5 = 12\n947 + 821 =", "y": "1768", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000561", "x": "7 + 5 = 12\n921 - 151 =", "y": "770", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000567", "x": "7 + 5 = 12\n38 - 53 + 50 =", "y": "35", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000580", "x": "7 + 5 = 12\n306 + 310 =", "y": "616", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000584", "x": "7 + 5 = 12\n79 - 67 =", "y": "12", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000592", "x": "7 + 5 = 12\n550 + 124 + 320 =", "y": "994", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000596", "x": "7 + 5 = 12\n755 + 892 - 228 =", "y": "1419", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000607", "x": "7 + 5 = 12\n649 + 348 =", "y": "997", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000636", "x": "7 + 5 = 12\n17 + 57 =", "y": "74", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000645", "x": "7 + 5 = 12\n689 - 151 - 533 =", "y": "5", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000660", "x": "7 + 5 = 12\n58 + 41 =", "y": "99", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000667", "x": "7 + 5 = 12\n828 + 627 - 372 =", "y": "1083", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000673", "x": "7 + 5 = 12\n92 - 41 + 47 =", "y": "98", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000688", "x": "7 + 5 = 12\n588 - 301 - 237 =", "y": "50", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000713", "x": "7 + 5 = 12\n971 - 888 =", "y": "83", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000715", "x": "7 + 5 = 12\n251 + 302 + 747 =", "y": "1300", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000716", "x": "7 + 5 = 12\n47 + 68 =", "y": "115", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000721", "x": "7 + 5 = 12\n39 - 18 =", "y": "21", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000752", "x": "7 + 5 = 12\n753 + 216 - 728 =", "y": "241", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000755", "x": "7 + 5 = 12\n55 - 37 =", "y": "18", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000766", "x": "7 + 5 = 12\n40 + 84 =", "y": "124", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000768", "x": "7 + 5 = 12\n234 + 591 =", "y": "825", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000772", "x": "7 + 5 = 12\n473 + 825 =", "y": "1298", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000790", "x": "7 + 5 = 12\n52 + 20 - 70 =", "y": "2", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000792", "x": "7 + 5 = 12\n99 + 96 =", "y": "195", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000796", "x": "7 + 5 = 12\n77 - 17 + 21 =", "y": "81", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000813", "x": "7 + 5 = 12\n32 + 24 - 53 =", "y": "3", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000824", "x": "7 + 5 = 12\n47 - 15 =", "y": "32", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000837", "x": "7 + 5 = 12\n991 - 627 =", "y": "364", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000851", "x": "7 + 5 = 12\n41 - 16 + 96 =", "y": "121", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000855", "x": "7 + 5 = 12\n541 + 350 =", "y": "891", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000856", "x": "7 + 5 = 12\n59 + 47 - 62 =", "y": "44", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000866", "x": "7 + 5 = 12\n487 + 706 =", "y": "1193", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000867", "x": "7 + 5 = 12\n79 - 63 =", "y": "16", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000873", "x": "7 + 5 = 12\n259 + 375 =", "y": "634", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000874", "x": "7 + 5 = 12\n853 + 639 - 657 =", "y": "835", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000878", "x": "7 + 5 = 12\n938 - 715 + 332 =", "y": "555", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000885", "x": "7 + 5 = 12\n140 + 301 + 783 =", "y": "1224", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000892", "x": "7 + 5 = 12\n67 + 27 + 48 =", "y": "142", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000896", "x": "7 + 5 = 12\n15 + 71 - 27 =", "y": "59", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000903", "x": "7 + 5 = 12\n504 + 190 =", "y": "694", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000914", "x": "7 + 5 = 12\n85 - 39 + 78 =", "y": "124", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_000921", "x": "7 + 5 = 12\n969 - 157 + 187 =", "y": "999", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000930", "x": "7 + 5 = 12\n94 - 93 + 75 =", "y": "76", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000944", "x": "7 + 5 = 12\n230 + 828 - 309 =", "y": "749", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000952", "x": "7 + 5 = 12\n842 - 602 + 552 =", "y": "792", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_000960", "x": "7 + 5 = 12\n146 + 823 + 693 =", "y": "1662", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_000968", "x": "7 + 5 = 12\n10 + 12 =", "y": "22", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_000996", "x": "7 + 5 = 12\n42 + 52 - 30 =", "y": "64", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001022", "x": "7 + 5 = 12\n26 + 97 + 85 =", "y": "208", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001023", "x": "7 + 5 = 12\n84 - 86 + 13 =", "y": "11", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001030", "x": "7 + 5 = 12\n60 + 15 - 41 =", "y": "34", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001040", "x": "7 + 5 = 12\n633 - 510 =", "y": "123", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001043", "x": "7 + 5 = 12\n591 + 587 - 408 =", "y": "770", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001051", "x": "7 + 5 = 12\n938 - 314 + 897 =", "y": "1521", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001055", "x": "7 + 5 = 12\n751 + 131 =", "y": "882", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001064", "x": "7 + 5 = 12\n634 - 908 + 801 =", "y": "527", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001068", "x": "7 + 5 = 12\n185 + 754 =", "y": "939", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001071", "x": "7 + 5 = 12\n776 + 360 =", "y": "1136", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001082", "x": "7 + 5 = 12\n31 + 89 =", "y": "120", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001091", "x": "7 + 5 = 12\n46 - 46 + 60 =", "y": "60", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001109", "x": "7 + 5 = 12\n62 - 63 + 71 =", "y": "70", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001125", "x": "7 + 5 = 12\n94 + 88 + 77 =", "y": "259", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001134", "x": "7 + 5 = 12\n53 - 51 + 15 =", "y": "17", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001141", "x": "7 + 5 = 12\n93 + 39 =", "y": "132", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001144", "x": "7 + 5 = 12\n18 + 86 + 24 =", "y": "128", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001170", "x": "7 + 5 = 12\n483 + 831 + 385 =", "y": "1699", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001171", "x": "7 + 5 = 12\n112 + 572 =", "y": "684", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001187", "x": "7 + 5 = 12\n31 + 31 =", "y": "62", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001208", "x": "7 + 5 = 12\n319 + 654 =", "y": "973", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001214", "x": "7 + 5 = 12\n20 + 98 + 97 =", "y": "215", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001228", "x": "7 + 5 = 12\n89 - 50 =", "y": "39", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001249", "x": "7 + 5 = 12\n67 + 12 - 46 =", "y": "33", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001251", "x": "7 + 5 = 12\n681 + 860 - 116 =", "y": "1425", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001266", "x": "7 + 5 = 12\n637 - 221 =", "y": "416", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001276", "x": "7 + 5 = 12\n429 - 229 + 710 =", "y": "910", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001281", "x": "7 + 5 = 12\n34 + 51 - 20 =", "y": "65", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001283", "x": "7 + 5 = 12\n74 + 10 =", "y": "84", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001287", "x": "7 + 5 = 12\n53 + 22 =", "y": "75", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001308", "x": "7 + 5 = 12\n508 + 269 =", "y": "777", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001324", "x": "7 + 5 = 12\n63 - 46 =", "y": "17", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001329", "x": "7 + 5 = 12\n946 + 737 =", "y": "1683", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001348", "x": "7 + 5 = 12\n58 - 22 =", "y": "36", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001365", "x": "7 + 5 = 12\n70 + 24 =", "y": "94", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001366", "x": "7 + 5 = 12\n29 + 28 + 57 =", "y": "114", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001382", "x": "7 + 5 = 12\n53 + 12 =", "y": "65", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001384", "x": "7 + 5 = 12\n244 + 829 =", "y": "1073", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001387", "x": "7 + 5 = 12\n74 - 16 - 56 =", "y": "2", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001389", "x": "7 + 5 = 12\n94 - 11 =", "y": "83", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001419", "x": "7 + 5 = 12\n59 + 89 + 38 =", "y": "186", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001428", "x": "7 + 5 = 12\n54 - 29 =", "y": "25", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001434", "x": "7 + 5 = 12\n25 + 76 =", "y": "101", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001440", "x": "7 + 5 = 12\n12 + 22 =", "y": "34", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001441", "x": "7 + 5 = 12\n161 + 628 - 378 =", "y": "411", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001448", "x": "7 + 5 = 12\n150 - 599 + 733 =", "y": "284", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001450", "x": "7 + 5 = 12\n271 + 502 - 433 =", "y": "340", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001466", "x": "7 + 5 = 12\n39 - 36 + 93 =", "y": "96", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001469", "x": "7 + 5 = 12\n570 + 998 =", "y": "1568", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001476", "x": "7 + 5 = 12\n756 - 325 + 351 =", "y": "782", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001481", "x": "7 + 5 = 12\n88 - 86 + 50 =", "y": "52", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001500", "x": "7 + 5 = 12\n269 + 500 - 714 =", "y": "55", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001508", "x": "7 + 5 = 12\n219 + 442 =", "y": "661", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001510", "x": "7 + 5 = 12\n43 + 30 =", "y": "73", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001515", "x": "7 + 5 = 12\n20 - 51 + 50 =", "y": "19", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001530", "x": "7 + 5 = 12\n847 + 141 =", "y": "988", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001533", "x": "7 + 5 = 12\n32 + 41 + 10 =", "y": "83", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001536", "x": "7 + 5 = 12\n689 - 519 + 224 =", "y": "394", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001558", "x": "7 + 5 = 12\n686 - 605 =", "y": "81", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001564", "x": "7 + 5 = 12\n89 - 58 + 25 =", "y": "56", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001565", "x": "7 + 5 = 12\n109 + 330 =", "y": "439", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001584", "x": "7 + 5 = 12\n58 + 19 - 44 =", "y": "33", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001620", "x": "7 + 5 = 12\n554 + 344 - 253 =", "y": "645", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001646", "x": "7 + 5 = 12\n28 - 62 + 49 =", "y": "15", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001663", "x": "7 + 5 = 12\n32 - 32 + 87 =", "y": "87", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001672", "x": "7 + 5 = 12\n97 - 26 =", "y": "71", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001685", "x": "7 + 5 = 12\n28 - 70 + 84 =", "y": "42", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001690", "x": "7 + 5 = 12\n21 - 17 + 25 =", "y": "29", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001691", "x": "7 + 5 = 12\n41 + 26 =", "y": "67", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001713", "x": "7 + 5 = 12\n523 + 450 =", "y": "973", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001728", "x": "7 + 5 = 12\n22 + 29 + 18 =", "y": "69", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001756", "x": "7 + 5 = 12\n619 + 130 - 549 =", "y": "200", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001786", "x": "7 + 5 = 12\n337 + 929 =", "y": "1266", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001796", "x": "7 + 5 = 12\n28 + 23 =", "y": "51", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001799", "x": "7 + 5 = 12\n37 + 68 - 28 =", "y": "77", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001815", "x": "7 + 5 = 12\n51 - 44 =", "y": "7", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001822", "x": "7 + 5 = 12\n650 + 328 =", "y": "978", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001834", "x": "7 + 5 = 12\n10 + 22 + 51 =", "y": "83", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001862", "x": "7 + 5 = 12\n22 + 10 - 12 =", "y": "20", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001868", "x": "7 + 5 = 12\n68 + 94 =", "y": "162", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001880", "x": "7 + 5 = 12\n15 + 90 =", "y": "105", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001891", "x": "7 + 5 = 12\n40 + 53 =", "y": "93", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001897", "x": "7 + 5 = 12\n48 - 34 + 20 =", "y": "34", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001910", "x": "7 + 5 = 12\n16 + 47 =", "y": "63", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_001927", "x": "7 + 5 = 12\n959 + 224 - 393 =", "y": "790", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001940", "x": "7 + 5 = 12\n616 + 584 + 504 =", "y": "1704", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_001945", "x": "7 + 5 = 12\n77 - 10 =", "y": "67", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_001968", "x": "7 + 5 = 12\n155 + 311 =", "y": "466", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001973", "x": "7 + 5 = 12\n841 - 441 =", "y": "400", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_001978", "x": "7 + 5 = 12\n46 + 49 =", "y": "95", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002013", "x": "7 + 5 = 12\n62 + 41 =", "y": "103", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002023", "x": "7 + 5 = 12\n75 - 38 =", "y": "37", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002035", "x": "7 + 5 = 12\n40 - 13 =", "y": "27", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002051", "x": "7 + 5 = 12\n69 + 64 - 13 =", "y": "120", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002056", "x": "7 + 5 = 12\n702 - 102 + 140 =", "y": "740", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002069", "x": "7 + 5 = 12\n96 - 54 - 40 =", "y": "2", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002090", "x": "7 + 5 = 12\n559 - 558 + 898 =", "y": "899", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002097", "x": "7 + 5 = 12\n77 - 43 + 44 =", "y": "78", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002100", "x": "7 + 5 = 12\n21 + 78 =", "y": "99", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002101", "x": "7 + 5 = 12\n328 - 187 =", "y": "141", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002110", "x": "7 + 5 = 12\n244 + 444 =", "y": "688", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002135", "x": "7 + 5 = 12\n99 - 23 - 16 =", "y": "60", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002138", "x": "7 + 5 = 12\n502 - 103 =", "y": "399", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002143", "x": "7 + 5 = 12\n155 + 541 + 835 =", "y": "1531", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002154", "x": "7 + 5 = 12\n628 - 414 - 212 =", "y": "2", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002168", "x": "7 + 5 = 12\n787 - 879 + 612 =", "y": "520", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002170", "x": "7 + 5 = 12\n268 - 138 + 940 =", "y": "1070", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002183", "x": "7 + 5 = 12\n427 + 832 =", "y": "1259", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002192", "x": "7 + 5 = 12\n33 + 31 =", "y": "64", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002207", "x": "7 + 5 = 12\n56 + 41 - 72 =", "y": "25", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002208", "x": "7 + 5 = 12\n561 + 414 - 523 =", "y": "452", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002224", "x": "7 + 5 = 12\n11 + 77 =", "y": "88", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002245", "x": "7 + 5 = 12\n859 - 736 + 561 =", "y": "684", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002251", "x": "7 + 5 = 12\n14 + 82 - 52 =", "y": "44", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002253", "x": "7 + 5 = 12\n74 - 16 =", "y": "58", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002258", "x": "7 + 5 = 12\n650 + 561 - 692 =", "y": "519", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002272", "x": "7 + 5 = 12\n42 - 41 + 14 =", "y": "15", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002273", "x": "7 + 5 = 12\n202 + 950 - 481 =", "y": "671", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002286", "x": "7 + 5 = 12\n44 + 27 + 23 =", "y": "94", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002290", "x": "7 + 5 = 12\n14 + 53 - 63 =", "y": "4", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002292", "x": "7 + 5 = 12\n506 + 972 + 554 =", "y": "2032", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002297", "x": "7 + 5 = 12\n893 - 691 - 159 =", "y": "43", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002311", "x": "7 + 5 = 12\n27 + 57 =", "y": "84", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002315", "x": "7 + 5 = 12\n89 - 55 - 33 =", "y": "1", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002320", "x": "7 + 5 = 12\n981 - 440 =", "y": "541", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002325", "x": "7 + 5 = 12\n25 + 13 + 11 =", "y": "49", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002327", "x": "7 + 5 = 12\n331 - 300 + 841 =", "y": "872", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002331", "x": "7 + 5 = 12\n73 - 46 =", "y": "27", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002338", "x": "7 + 5 = 12\n84 - 13 - 30 =", "y": "41", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002346", "x": "7 + 5 = 12\n42 + 44 =", "y": "86", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002358", "x": "7 + 5 = 12\n25 + 28 + 43 =", "y": "96", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002365", "x": "7 + 5 = 12\n60 + 18 =", "y": "78", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002388", "x": "7 + 5 = 12\n81 + 77 + 70 =", "y": "228", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002408", "x": "7 + 5 = 12\n99 - 19 =", "y": "80", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002411", "x": "7 + 5 = 12\n79 + 29 - 96 =", "y": "12", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002419", "x": "7 + 5 = 12\n245 + 167 + 134 =", "y": "546", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002422", "x": "7 + 5 = 12\n22 + 81 =", "y": "103", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002453", "x": "7 + 5 = 12\n851 - 411 + 115 =", "y": "555", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002454", "x": "7 + 5 = 12\n903 + 250 + 485 =", "y": "1638", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002466", "x": "7 + 5 = 12\n55 + 24 - 39 =", "y": "40", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002468", "x": "7 + 5 = 12\n38 + 91 =", "y": "129", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002481", "x": "7 + 5 = 12\n859 - 801 =", "y": "58", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002482", "x": "7 + 5 = 12\n368 - 138 =", "y": "230", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002496", "x": "7 + 5 = 12\n398 - 302 =", "y": "96", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002501", "x": "7 + 5 = 12\n81 + 27 - 63 =", "y": "45", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002507", "x": "7 + 5 = 12\n899 - 241 - 337 =", "y": "321", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002524", "x": "7 + 5 = 12\n862 - 632 =", "y": "230", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002537", "x": "7 + 5 = 12\n171 - 287 + 980 =", "y": "864", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002544", "x": "7 + 5 = 12\n771 + 222 - 490 =", "y": "503", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002547", "x": "7 + 5 = 12\n385 + 514 =", "y": "899", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002549", "x": "7 + 5 = 12\n705 - 180 + 827 =", "y": "1352", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002550", "x": "7 + 5 = 12\n969 - 317 =", "y": "652", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002556", "x": "7 + 5 = 12\n57 - 33 + 40 =", "y": "64", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002559", "x": "7 + 5 = 12\n20 + 24 + 86 =", "y": "130", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002564", "x": "7 + 5 = 12\n21 + 60 =", "y": "81", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002567", "x": "7 + 5 = 12\n22 + 18 =", "y": "40", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002585", "x": "7 + 5 = 12\n75 + 72 =", "y": "147", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002587", "x": "7 + 5 = 12\n10 + 51 =", "y": "61", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002590", "x": "7 + 5 = 12\n240 + 157 =", "y": "397", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002604", "x": "7 + 5 = 12\n206 + 132 =", "y": "338", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002612", "x": "7 + 5 = 12\n43 + 24 =", "y": "67", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002614", "x": "7 + 5 = 12\n521 + 262 =", "y": "783", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002625", "x": "7 + 5 = 12\n643 - 619 =", "y": "24", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002629", "x": "7 + 5 = 12\n486 - 205 =", "y": "281", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002631", "x": "7 + 5 = 12\n264 + 465 =", "y": "729", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002650", "x": "7 + 5 = 12\n62 + 26 =", "y": "88", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002659", "x": "7 + 5 = 12\n67 + 40 =", "y": "107", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002662", "x": "7 + 5 = 12\n39 - 38 + 24 =", "y": "25", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002676", "x": "7 + 5 = 12\n72 + 23 - 70 =", "y": "25", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002682", "x": "7 + 5 = 12\n55 - 89 + 80 =", "y": "46", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002711", "x": "7 + 5 = 12\n70 - 52 =", "y": "18", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002750", "x": "7 + 5 = 12\n721 + 211 - 310 =", "y": "622", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002758", "x": "7 + 5 = 12\n530 + 236 - 425 =", "y": "341", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002778", "x": "7 + 5 = 12\n808 + 514 =", "y": "1322", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002789", "x": "7 + 5 = 12\n879 - 144 + 525 =", "y": "1260", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002794", "x": "7 + 5 = 12\n998 + 883 =", "y": "1881", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002797", "x": "7 + 5 = 12\n78 - 54 =", "y": "24", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002806", "x": "7 + 5 = 12\n43 + 32 + 13 =", "y": "88", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002808", "x": "7 + 5 = 12\n24 + 39 =", "y": "63", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002825", "x": "7 + 5 = 12\n706 + 110 - 213 =", "y": "603", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002846", "x": "7 + 5 = 12\n232 + 167 - 361 =", "y": "38", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002861", "x": "7 + 5 = 12\n944 - 336 + 436 =", "y": "1044", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002874", "x": "7 + 5 = 12\n561 - 967 + 839 =", "y": "433", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002883", "x": "7 + 5 = 12\n338 - 177 + 430 =", "y": "591", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002907", "x": "7 + 5 = 12\n487 - 365 + 377 =", "y": "499", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002929", "x": "7 + 5 = 12\n839 - 729 + 146 =", "y": "256", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002941", "x": "7 + 5 = 12\n48 - 36 + 40 =", "y": "52", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002942", "x": "7 + 5 = 12\n557 + 628 - 668 =", "y": "517", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002947", "x": "7 + 5 = 12\n82 - 81 + 72 =", "y": "73", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002952", "x": "7 + 5 = 12\n770 + 490 - 303 =", "y": "957", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002953", "x": "7 + 5 = 12\n20 + 79 =", "y": "99", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_002967", "x": "7 + 5 = 12\n750 + 184 =", "y": "934", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002971", "x": "7 + 5 = 12\n397 - 262 =", "y": "135", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002975", "x": "7 + 5 = 12\n662 + 303 =", "y": "965", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_002979", "x": "7 + 5 = 12\n755 - 276 =", "y": "479", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002980", "x": "7 + 5 = 12\n82 + 41 =", "y": "123", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_002984", "x": "7 + 5 = 12\n713 + 957 - 541 =", "y": "1129", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_002991", "x": "7 + 5 = 12\n64 - 36 =", "y": "28", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003002", "x": "7 + 5 = 12\n612 + 176 - 533 =", "y": "255", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003023", "x": "7 + 5 = 12\n852 - 481 =", "y": "371", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003026", "x": "7 + 5 = 12\n13 + 53 + 42 =", "y": "108", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003038", "x": "7 + 5 = 12\n265 - 580 + 409 =", "y": "94", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003050", "x": "7 + 5 = 12\n518 + 821 =", "y": "1339", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003051", "x": "7 + 5 = 12\n91 - 61 + 46 =", "y": "76", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003070", "x": "7 + 5 = 12\n63 - 32 + 41 =", "y": "72", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003079", "x": "7 + 5 = 12\n89 - 73 =", "y": "16", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003117", "x": "7 + 5 = 12\n734 + 121 =", "y": "855", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003118", "x": "7 + 5 = 12\n364 + 852 - 785 =", "y": "431", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003123", "x": "7 + 5 = 12\n789 + 459 =", "y": "1248", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003137", "x": "7 + 5 = 12\n365 - 908 + 638 =", "y": "95", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003140", "x": "7 + 5 = 12\n523 - 494 =", "y": "29", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003153", "x": "7 + 5 = 12\n507 + 924 - 649 =", "y": "782", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003157", "x": "7 + 5 = 12\n95 - 36 =", "y": "59", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003175", "x": "7 + 5 = 12\n75 + 87 =", "y": "162", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003187", "x": "7 + 5 = 12\n23 + 16 - 27 =", "y": "12", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003192", "x": "7 + 5 = 12\n996 + 928 =", "y": "1924", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003199", "x": "7 + 5 = 12\n586 - 414 =", "y": "172", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003211", "x": "7 + 5 = 12\n26 + 50 - 52 =", "y": "24", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003216", "x": "7 + 5 = 12\n52 + 46 =", "y": "98", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003222", "x": "7 + 5 = 12\n30 - 62 + 53 =", "y": "21", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003230", "x": "7 + 5 = 12\n301 + 233 + 154 =", "y": "688", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003265", "x": "7 + 5 = 12\n91 - 86 + 88 =", "y": "93", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003269", "x": "7 + 5 = 12\n69 + 78 =", "y": "147", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003270", "x": "7 + 5 = 12\n170 + 116 =", "y": "286", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003285", "x": "7 + 5 = 12\n789 + 347 + 358 =", "y": "1494", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003305", "x": "7 + 5 = 12\n807 - 503 =", "y": "304", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003332", "x": "7 + 5 = 12\n61 + 76 =", "y": "137", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003334", "x": "7 + 5 = 12\n88 + 92 =", "y": "180", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003358", "x": "7 + 5 = 12\n40 + 80 =", "y": "120", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003371", "x": "7 + 5 = 12\n70 + 28 + 49 =", "y": "147", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003373", "x": "7 + 5 = 12\n731 + 410 - 875 =", "y": "266", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003375", "x": "7 + 5 = 12\n221 + 224 - 134 =", "y": "311", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003385", "x": "7 + 5 = 12\n374 - 139 =", "y": "235", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003393", "x": "7 + 5 = 12\n181 + 103 - 104 =", "y": "180", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003409", "x": "7 + 5 = 12\n76 - 22 - 14 =", "y": "40", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003421", "x": "7 + 5 = 12\n868 - 546 =", "y": "322", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003436", "x": "7 + 5 = 12\n62 + 49 + 75 =", "y": "186", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003438", "x": "7 + 5 = 12\n21 + 62 =", "y": "83", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003442", "x": "7 + 5 = 12\n42 + 44 + 66 =", "y": "152", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003443", "x": "7 + 5 = 12\n359 - 106 + 134 =", "y": "387", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003458", "x": "7 + 5 = 12\n50 - 62 + 75 =", "y": "63", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003462", "x": "7 + 5 = 12\n856 - 601 - 175 =", "y": "80", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003467", "x": "7 + 5 = 12\n29 + 65 =", "y": "94", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003468", "x": "7 + 5 = 12\n122 + 757 - 755 =", "y": "124", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003469", "x": "7 + 5 = 12\n846 - 301 + 339 =", "y": "884", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003475", "x": "7 + 5 = 12\n394 - 266 =", "y": "128", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003490", "x": "7 + 5 = 12\n496 + 289 =", "y": "785", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003511", "x": "7 + 5 = 12\n31 + 70 =", "y": "101", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003514", "x": "7 + 5 = 12\n378 + 552 =", "y": "930", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003520", "x": "7 + 5 = 12\n81 + 31 =", "y": "112", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003531", "x": "7 + 5 = 12\n305 + 920 =", "y": "1225", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003535", "x": "7 + 5 = 12\n600 + 103 + 216 =", "y": "919", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003544", "x": "7 + 5 = 12\n95 - 12 =", "y": "83", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003546", "x": "7 + 5 = 12\n115 + 263 =", "y": "378", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003550", "x": "7 + 5 = 12\n20 + 31 + 36 =", "y": "87", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003555", "x": "7 + 5 = 12\n93 + 44 =", "y": "137", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003563", "x": "7 + 5 = 12\n717 + 253 - 907 =", "y": "63", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003579", "x": "7 + 5 = 12\n47 + 82 - 61 =", "y": "68", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003585", "x": "7 + 5 = 12\n70 + 22 - 61 =", "y": "31", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003586", "x": "7 + 5 = 12\n37 + 32 =", "y": "69", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003587", "x": "7 + 5 = 12\n104 + 893 =", "y": "997", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003590", "x": "7 + 5 = 12\n61 + 74 + 62 =", "y": "197", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003591", "x": "7 + 5 = 12\n65 - 14 =", "y": "51", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003592", "x": "7 + 5 = 12\n49 + 47 =", "y": "96", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003609", "x": "7 + 5 = 12\n90 - 56 =", "y": "34", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003617", "x": "7 + 5 = 12\n80 + 17 - 26 =", "y": "71", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003618", "x": "7 + 5 = 12\n985 + 517 =", "y": "1502", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003621", "x": "7 + 5 = 12\n435 + 232 =", "y": "667", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003646", "x": "7 + 5 = 12\n88 - 36 + 30 =", "y": "82", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003653", "x": "7 + 5 = 12\n34 + 53 - 50 =", "y": "37", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003663", "x": "7 + 5 = 12\n406 + 212 =", "y": "618", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003666", "x": "7 + 5 = 12\n598 + 814 =", "y": "1412", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003675", "x": "7 + 5 = 12\n97 - 23 - 21 =", "y": "53", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003720", "x": "7 + 5 = 12\n34 + 37 =", "y": "71", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003723", "x": "7 + 5 = 12\n591 + 545 =", "y": "1136", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003742", "x": "7 + 5 = 12\n60 + 54 - 65 =", "y": "49", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003758", "x": "7 + 5 = 12\n27 + 41 =", "y": "68", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003786", "x": "7 + 5 = 12\n244 + 475 =", "y": "719", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003787", "x": "7 + 5 = 12\n59 - 35 + 13 =", "y": "37", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003788", "x": "7 + 5 = 12\n45 + 62 - 87 =", "y": "20", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003801", "x": "7 + 5 = 12\n51 - 10 =", "y": "41", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003809", "x": "7 + 5 = 12\n210 + 728 =", "y": "938", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003814", "x": "7 + 5 = 12\n66 + 73 =", "y": "139", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003822", "x": "7 + 5 = 12\n502 + 915 =", "y": "1417", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003826", "x": "7 + 5 = 12\n373 - 373 + 694 =", "y": "694", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003832", "x": "7 + 5 = 12\n954 - 311 =", "y": "643", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003842", "x": "7 + 5 = 12\n97 - 20 =", "y": "77", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003844", "x": "7 + 5 = 12\n181 + 200 =", "y": "381", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003846", "x": "7 + 5 = 12\n767 + 403 =", "y": "1170", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003852", "x": "7 + 5 = 12\n154 + 834 - 845 =", "y": "143", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003855", "x": "7 + 5 = 12\n178 + 700 - 863 =", "y": "15", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003860", "x": "7 + 5 = 12\n262 + 700 =", "y": "962", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003864", "x": "7 + 5 = 12\n67 - 60 =", "y": "7", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003874", "x": "7 + 5 = 12\n980 - 689 =", "y": "291", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003876", "x": "7 + 5 = 12\n59 + 89 - 10 =", "y": "138", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003880", "x": "7 + 5 = 12\n55 + 94 =", "y": "149", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003888", "x": "7 + 5 = 12\n57 - 37 =", "y": "20", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003922", "x": "7 + 5 = 12\n420 + 187 + 990 =", "y": "1597", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003926", "x": "7 + 5 = 12\n95 + 20 - 32 =", "y": "83", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003930", "x": "7 + 5 = 12\n32 + 57 =", "y": "89", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003932", "x": "7 + 5 = 12\n50 - 30 + 19 =", "y": "39", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_003953", "x": "7 + 5 = 12\n380 + 903 =", "y": "1283", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_003960", "x": "7 + 5 = 12\n17 + 68 =", "y": "85", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003965", "x": "7 + 5 = 12\n200 + 229 =", "y": "429", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003968", "x": "7 + 5 = 12\n175 + 724 - 750 =", "y": "149", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_003971", "x": "7 + 5 = 12\n80 + 28 =", "y": "108", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003972", "x": "7 + 5 = 12\n62 - 49 =", "y": "13", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_003983", "x": "7 + 5 = 12\n500 + 101 =", "y": "601", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004010", "x": "7 + 5 = 12\n543 + 302 =", "y": "845", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004013", "x": "7 + 5 = 12\n724 - 524 =", "y": "200", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004019", "x": "7 + 5 = 12\n478 - 358 + 547 =", "y": "667", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004020", "x": "7 + 5 = 12\n577 + 342 =", "y": "919", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004032", "x": "7 + 5 = 12\n44 + 45 =", "y": "89", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004084", "x": "7 + 5 = 12\n605 + 700 =", "y": "1305", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004088", "x": "7 + 5 = 12\n584 + 115 - 368 =", "y": "331", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004094", "x": "7 + 5 = 12\n991 - 650 + 157 =", "y": "498", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004096", "x": "7 + 5 = 12\n71 + 40 + 30 =", "y": "141", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004098", "x": "7 + 5 = 12\n547 + 516 + 981 =", "y": "2044", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004103", "x": "7 + 5 = 12\n396 - 245 =", "y": "151", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004106", "x": "7 + 5 = 12\n74 - 23 + 37 =", "y": "88", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004138", "x": "7 + 5 = 12\n888 - 574 =", "y": "314", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004146", "x": "7 + 5 = 12\n278 + 620 - 582 =", "y": "316", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004178", "x": "7 + 5 = 12\n402 + 867 =", "y": "1269", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004191", "x": "7 + 5 = 12\n548 - 508 + 624 =", "y": "664", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004194", "x": "7 + 5 = 12\n32 + 54 =", "y": "86", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004195", "x": "7 + 5 = 12\n15 - 15 + 44 =", "y": "44", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004196", "x": "7 + 5 = 12\n411 + 274 - 260 =", "y": "425", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004203", "x": "7 + 5 = 12\n99 + 68 + 44 =", "y": "211", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004211", "x": "7 + 5 = 12\n33 + 37 =", "y": "70", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004212", "x": "7 + 5 = 12\n66 - 55 =", "y": "11", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004214", "x": "7 + 5 = 12\n323 + 803 =", "y": "1126", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004230", "x": "7 + 5 = 12\n233 - 528 + 538 =", "y": "243", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004231", "x": "7 + 5 = 12\n89 - 22 - 66 =", "y": "1", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004233", "x": "7 + 5 = 12\n143 + 456 - 468 =", "y": "131", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004240", "x": "7 + 5 = 12\n592 + 701 + 340 =", "y": "1633", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004255", "x": "7 + 5 = 12\n96 + 98 + 83 =", "y": "277", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004257", "x": "7 + 5 = 12\n394 + 605 + 572 =", "y": "1571", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004270", "x": "7 + 5 = 12\n99 + 42 =", "y": "141", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004279", "x": "7 + 5 = 12\n421 + 303 - 414 =", "y": "310", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004334", "x": "7 + 5 = 12\n953 - 841 =", "y": "112", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004337", "x": "7 + 5 = 12\n280 + 682 =", "y": "962", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004343", "x": "7 + 5 = 12\n595 - 435 + 781 =", "y": "941", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004366", "x": "7 + 5 = 12\n104 + 750 =", "y": "854", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004383", "x": "7 + 5 = 12\n46 + 86 =", "y": "132", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004400", "x": "7 + 5 = 12\n30 + 11 + 18 =", "y": "59", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004401", "x": "7 + 5 = 12\n762 - 882 + 972 =", "y": "852", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004411", "x": "7 + 5 = 12\n17 + 41 - 38 =", "y": "20", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004414", "x": "7 + 5 = 12\n95 + 61 =", "y": "156", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004415", "x": "7 + 5 = 12\n611 - 470 + 850 =", "y": "991", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004437", "x": "7 + 5 = 12\n69 + 46 =", "y": "115", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004438", "x": "7 + 5 = 12\n91 - 17 =", "y": "74", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004442", "x": "7 + 5 = 12\n180 + 250 =", "y": "430", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004443", "x": "7 + 5 = 12\n11 + 75 - 81 =", "y": "5", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004457", "x": "7 + 5 = 12\n566 - 421 + 231 =", "y": "376", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004485", "x": "7 + 5 = 12\n47 + 32 =", "y": "79", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004499", "x": "7 + 5 = 12\n352 + 421 - 231 =", "y": "542", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004512", "x": "7 + 5 = 12\n97 + 95 =", "y": "192", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004514", "x": "7 + 5 = 12\n74 - 43 + 17 =", "y": "48", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004519", "x": "7 + 5 = 12\n826 - 228 =", "y": "598", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004520", "x": "7 + 5 = 12\n474 - 174 + 122 =", "y": "422", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004535", "x": "7 + 5 = 12\n954 + 995 =", "y": "1949", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004543", "x": "7 + 5 = 12\n889 - 487 =", "y": "402", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004554", "x": "7 + 5 = 12\n763 - 692 + 355 =", "y": "426", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004559", "x": "7 + 5 = 12\n997 - 997 + 330 =", "y": "330", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004566", "x": "7 + 5 = 12\n211 + 588 - 438 =", "y": "361", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004584", "x": "7 + 5 = 12\n742 - 112 =", "y": "630", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004589", "x": "7 + 5 = 12\n10 + 27 =", "y": "37", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004590", "x": "7 + 5 = 12\n939 - 829 =", "y": "110", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004613", "x": "7 + 5 = 12\n944 - 734 + 385 =", "y": "595", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004627", "x": "7 + 5 = 12\n722 - 515 =", "y": "207", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004642", "x": "7 + 5 = 12\n915 - 784 + 384 =", "y": "515", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004696", "x": "7 + 5 = 12\n33 + 46 =", "y": "79", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004704", "x": "7 + 5 = 12\n30 + 31 =", "y": "61", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004706", "x": "7 + 5 = 12\n951 + 547 + 763 =", "y": "2261", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004711", "x": "7 + 5 = 12\n611 - 745 + 598 =", "y": "464", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004714", "x": "7 + 5 = 12\n872 + 948 =", "y": "1820", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004722", "x": "7 + 5 = 12\n589 - 281 + 341 =", "y": "649", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004729", "x": "7 + 5 = 12\n50 + 24 =", "y": "74", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004730", "x": "7 + 5 = 12\n14 + 50 =", "y": "64", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004736", "x": "7 + 5 = 12\n102 + 561 =", "y": "663", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004760", "x": "7 + 5 = 12\n25 - 10 =", "y": "15", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004772", "x": "7 + 5 = 12\n858 - 324 =", "y": "534", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004774", "x": "7 + 5 = 12\n76 + 46 - 11 =", "y": "111", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004775", "x": "7 + 5 = 12\n676 + 112 - 628 =", "y": "160", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004784", "x": "7 + 5 = 12\n145 + 549 =", "y": "694", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004788", "x": "7 + 5 = 12\n98 - 21 - 17 =", "y": "60", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004791", "x": "7 + 5 = 12\n17 + 50 + 41 =", "y": "108", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004796", "x": "7 + 5 = 12\n11 + 69 =", "y": "80", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004817", "x": "7 + 5 = 12\n439 - 135 + 142 =", "y": "446", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004839", "x": "7 + 5 = 12\n27 + 29 =", "y": "56", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004843", "x": "7 + 5 = 12\n84 - 92 + 28 =", "y": "20", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004855", "x": "7 + 5 = 12\n347 + 290 =", "y": "637", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004859", "x": "7 + 5 = 12\n985 - 301 - 370 =", "y": "314", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004872", "x": "7 + 5 = 12\n513 + 328 =", "y": "841", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004878", "x": "7 + 5 = 12\n642 + 114 - 413 =", "y": "343", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004880", "x": "7 + 5 = 12\n915 + 222 - 796 =", "y": "341", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004890", "x": "7 + 5 = 12\n164 + 810 =", "y": "974", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004897", "x": "7 + 5 = 12\n957 - 722 + 504 =", "y": "739", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004933", "x": "7 + 5 = 12\n981 + 616 =", "y": "1597", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": true}}
+{"id": "prob_004936", "x": "7 + 5 = 12\n977 - 353 =", "y": "624", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004939", "x": "7 + 5 = 12\n228 + 671 - 605 =", "y": "294", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004957", "x": "7 + 5 = 12\n792 - 570 + 462 =", "y": "684", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004960", "x": "7 + 5 = 12\n32 + 71 =", "y": "103", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004972", "x": "7 + 5 = 12\n196 - 123 =", "y": "73", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 3, "has_carry": false}}
+{"id": "prob_004981", "x": "7 + 5 = 12\n37 + 33 =", "y": "70", "split": "test", "features": {"language": "symbolic", "n_terms": 2, "n_digits": 2, "has_carry": true}}
+{"id": "prob_004985", "x": "7 + 5 = 12\n14 + 42 + 22 =", "y": "78", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": false}}
+{"id": "prob_004986", "x": "7 + 5 = 12\n83 + 73 + 36 =", "y": "192", "split": "test", "features": {"language": "symbolic", "n_terms": 3, "n_digits": 2, "has_carry": true}}
