@@ -1,1 +1,6 @@
 __pycache__
+
+# Machine-local interpreter path, written by scripts/run_mit_circuit_overlap.sh
+# so a cmd_queue worker (which inherits nothing) can find the venv that
+# run_developer_setup.sh installed into.
+magnet_adapter/.python_path.*

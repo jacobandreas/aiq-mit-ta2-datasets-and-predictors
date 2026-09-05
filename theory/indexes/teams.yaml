@@ -1,0 +1,59 @@
+# The formalization behind this repository's evaluation card.
+#
+# Every theorem here is PROVED -- there is no `sorry` in the Lean file this
+# indexes, and it typechecks against Mathlib.
+#
+# The content is deliberately in the HYPOTHESES as much as the conclusions:
+# where a premise is not discharged, that is the finding.
+
+schema_version: 1
+formalization:
+  system: lean4
+entries:
+- id: AIQ.Teams.CircuitOverlap.jaccard_le_one
+  kind: theorem
+  declaration: AIQ.Teams.CircuitOverlap.jaccard_le_one
+  source_path: theory/lean/CircuitOverlap/Basic.lean
+  statement: 'Circuit overlap is bounded by one, for any two circuits including empty ones.
+    PROVED.
+
+    '
+- id: AIQ.Teams.CircuitOverlap.jaccard_topK_relabel
+  kind: theorem
+  declaration: AIQ.Teams.CircuitOverlap.jaccard_topK_relabel
+  source_path: theory/lean/CircuitOverlap/Basic.lean
+  statement: 'Relabelling hidden units leaves the reference/item circuit overlap identical,
+    for every pair of score vectors and every K. PROVED.
+
+    This is the justification the deployed within-model comparison rests on: the measurement
+    reflects the model and not the order its units happen to be stored in. It was previously
+    only asserted.
+
+    '
+- id: AIQ.Teams.CircuitOverlap.jaccard_not_invariant_of_one_sided_image
+  kind: theorem
+  declaration: AIQ.Teams.CircuitOverlap.jaccard_not_invariant_of_one_sided_image
+  source_path: theory/lean/CircuitOverlap/Basic.lean
+  statement: 'The boundary of the result above: permuting only ONE side takes the overlap
+    from 1 to 0. PROVED with an explicit witness.
+
+    Two independently trained models are exactly that situation, so cross-model circuit comparison
+    is ill-posed without an alignment step -- shown, not merely suspected.
+
+    '
+- id: AIQ.Teams.CircuitOverlap.topK_card_le
+  kind: theorem
+  declaration: AIQ.Teams.CircuitOverlap.topK_card_le
+  source_path: theory/lean/CircuitOverlap/Basic.lean
+  statement: 'The selected circuit has at most K units, when the scores are injective on the
+    unit set. PROVED. The injectivity hypothesis is the tie-breaking question the card leaves
+    unspecified: with tied scores the selection returns more than K.
+
+    '
+  premises:
+  - id: hinj
+    type: Set.InjOn w U
+    statement: 'the attribution scores are distinct across units. Unspecified by the card,
+      and the answer changes the circuit''s size
+
+      '

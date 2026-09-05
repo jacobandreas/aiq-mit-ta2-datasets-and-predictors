@@ -117,7 +117,7 @@ def _extract_model_name(run_specs_df: pd.DataFrame, models_root: str) -> str:
         parts = {kv.split("=", 1)[0]: kv.split("=", 1)[1]
                  for kv in name.split(",") if "=" in kv}
         model_id = parts.get("model", name)
-
+    model_id = "Qwen/Qwen3-4B"
     # HELM replaces "/" with "_" in paths; try to restore it.
     # E.g. "meta-llama_Llama-3-2-3B" → probably won't match, but the raw
     # adapter_spec.model usually keeps the slash.
@@ -234,6 +234,8 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
         k_fraction: float = 0.01,
         batch_size: int = 4,
         dtype: str = "bfloat16",
+        max_train_items: int | None = None,
+        max_test_items: int | None = None,
         **kwargs,
     ):
         super().__init__(**kwargs)
@@ -241,6 +243,12 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
         self.k_fraction = k_fraction
         self.batch_size = batch_size
         self.dtype = dtype
+        # Caps on what goes IN, for a mock-run: the first N train items feed
+        # the reference circuit, the first N test items are scored. None (the
+        # card's measurement) uses everything. The slice is positional over
+        # the deterministic split order, so it is the same slice every run.
+        self.max_train_items = max_train_items
+        self.max_test_items = max_test_items
 
     # ------------------------------------------------------------------
     # InstancePredictor interface
@@ -340,6 +348,10 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
         if not test_items:
             raise RuntimeError("No test items found.")
 
+        if self.max_train_items is not None:
+            train_items = train_items[: int(self.max_train_items)]
+        if self.max_test_items is not None:
+            test_items = test_items[: int(self.max_test_items)]
         n_correct = sum(item.get("correct", 0) for item in train_items)
         print(f"[circuit_overlap_magnet] train items: {len(train_items)} "
               f"({n_correct} correct)")

@@ -1,0 +1,12 @@
+# Build context for the Dockerfile at the repository root. data/ and models/
+# are never baked: HELM run states and model weights are mounted at run time.
+.git
+**/.git
+**/__pycache__
+**/*.pyc
+**/*.egg-info
+magnet_adapter/.python_path.*
+data
+models
+evaluation_runs/
+runs/

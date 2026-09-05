@@ -1,0 +1,42 @@
+# formalization.yaml (v0.3): repo-root metadata for an AI-assisted formalization.
+# Schema reference: https://github.com/mathlib-initiative/formalization.yaml
+
+version: "v0.3"
+
+project:
+  name: "Circuit overlap: what a Jaccard comparison of circuits does and does not measure"
+  authors:
+    - "Kitware"
+    - "Claude Opus 5"
+  license: "Apache-2.0"
+  description: >
+    Lean 4 formalization of the overlap the predictor ranks by. Top-K
+        selection is equivariant under a relabelling of hidden units and Jaccard is
+        invariant when both circuits move by the same permutation, so the
+        within-model comparison measures the model rather than the order its units
+        are stored in.
+
+# The evaluation card this formalization is about.
+targets:
+  cards:
+    - "magnet_adapter/cards/qwen_arithmetic_fixed_kwdagger.yaml"
+  claim: "AUC of a circuit-overlap predictor of per-instance correctness, asserted above a threshold"
+
+# Built and checked against Mathlib at the revision pinned in lake-manifest.json.
+#
+#     cd theory && lake exe cache get && lake build
+status:
+  build:
+    toolchain: "leanprover/lean4:v4.33.0-rc2"
+    sorries: 0
+    validation_commands:
+      - "lake exe cache get"
+      - "lake build"
+
+fidelity:
+  known_limitations: >
+    No attribution, no network, and no AUC -- the ranking quality the
+        card actually asserts is not modelled. Top-K is only "the top K" when scores
+        are distinct; the size bound carries an injectivity hypothesis and the card
+        leaves its tie-breaking unspecified. Cross-model comparison is shown to fail
+        without alignment, not repaired.

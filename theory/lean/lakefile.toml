@@ -1,0 +1,28 @@
+# Lean project for this repository's formalization.
+#
+#     cd theory/lean
+#     lake exe cache get     # prebuilt Mathlib oleans; do NOT run `lake update`
+#     lake build
+#
+# `lake update` would repin Mathlib. The committed `lake-manifest.json` pins the
+# exact revision these proofs were checked against; resolving fresh picks a
+# newer Mathlib, and a proof that holds against one revision is not guaranteed
+# to hold against another.
+#
+# Layout follows the usual Lean convention: `CircuitOverlap.lean` is the root module and
+# imports `CircuitOverlap/Basic.lean`, so further modules are added under `CircuitOverlap/` and
+# imported from the root.
+
+name = "circuit_overlap"
+version = "0.1.0"
+defaultTargets = ["CircuitOverlap"]
+
+[leanOptions]
+autoImplicit = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+
+[[lean_lib]]
+name = "CircuitOverlap"

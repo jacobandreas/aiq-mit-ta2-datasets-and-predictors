@@ -33,7 +33,51 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
+# Imported after the sys.path insert, for the same reason everything else in
+# this file is: the runner is executed as a script, not as a package member.
+import magnet.theory as theory  # noqa: E402
 
+# ---------------------------------------------------------------------------
+# Theory bindings: theory/indexes/hygiene.yaml.
+#
+# The circuit-overlap card has no bespoke theorem behind its "AUC >= 0.65",
+# and saying so precisely is worth more than leaving it unsaid: a threshold
+# card still leans on the same premises every threshold card leans on.
+#
+# Every predicate is a no-op at run time -- decorators return their target
+# unchanged -- and MAGNET reads them out of this file with `ast` rather than
+# importing it, so auditing the card never needs torch or a GPU.
+#
+# The unaccounted premise this exists to surface is `hn_sufficient`: nothing
+# anywhere computes whether the test split resolves an AUC gap of 0.15 above
+# chance, and `max_test_items` in the card matrix can shrink it further with
+# no effect on the reported number.
+# ---------------------------------------------------------------------------
+
+
+@theory.assumes(
+    'Hygiene.Inference.threshold_exceeds_sampling_error::hn_sufficient',
+    note='the load-bearing gap. This function returns a point AUC '
+         'and nothing else. No confidence interval, no permutation null, no '
+         'count of positives and negatives -- and the sampling error of an AUC '
+         'is governed by the smaller of those two counts, not by the item '
+         'total. The card asserts 0.65, i.e. 0.15 above chance; whether the '
+         'cross_lingual test split resolves 0.15 at any stated confidence is '
+         'never computed. `max_test_items` in the card matrix can shrink the '
+         'split further and the reported number would not change shape. The '
+         'guard here is `len(set(y_true)) < 2 -> nan`, which is a check that '
+         'AUC is DEFINED, not a check that it is resolvable.',
+)
+@theory.assumes(
+    'Hygiene.Measurement.measured_score_tracks_construct::hstable',
+    note='the score being ranked is a gradient-times-activation '
+         'attribution summed over the reference top-K. Both `dtype` '
+         '(bfloat16 on GPU, float32 on CPU) and `batch_size` are card matrix '
+         'parameters, and both change those attributions numerically. Nothing '
+         'measures whether the AUC is stable across them, so the card cannot '
+         'presently distinguish "the predictor works" from "the predictor '
+         'works at bf16, batch 4".',
+)
 def _compute_auc(predicted_mean, actual_mean) -> float:
     import numpy as np
     from sklearn.metrics import roc_auc_score
@@ -45,6 +89,42 @@ def _compute_auc(predicted_mean, actual_mean) -> float:
     return float(roc_auc_score(y_true, y_score))
 
 
+@theory.tests(
+    'Hygiene.Inference.threshold_exceeds_sampling_error',
+    note='this is where "AUC >= 0.65" is either discharged or left standing',
+)
+@theory.approximates(
+    'Hygiene.Measurement.measured_score_tracks_construct',
+    note='construct: gets the item right; measured: a rank correlation on a split',
+)
+@theory.satisfies(
+    'Hygiene.Inference.threshold_exceeds_sampling_error::hprespecified',
+    note='0.65 is fixed before results are seen, but hard-coded in the claim '
+         'block rather than declared as an overridable card symbol',
+)
+@theory.assumes(
+    'Hygiene.Inference.threshold_exceeds_sampling_error::hmultiple',
+    note='`mean_auc` is a mean over whatever models matched '
+         '`run_spec_pattern`, and the card matrix is explicitly designed to '
+         'sweep `k_fraction` and model patterns. Every sweep point is a '
+         'comparison against the same 0.65, and no correction is applied. With '
+         'the default one-model cell `mean_auc` is that single model AUC, '
+         'which makes the family size invisible rather than absent.',
+)
+@theory.satisfies(
+    'Hygiene.Measurement.measured_score_tracks_construct::hscorer',
+    note='HELM exact match, where the construct IS string equality',
+)
+@theory.assumes(
+    'Hygiene.Measurement.measured_score_tracks_construct::hcontam',
+    note='nothing establishes that the arithmetic_fixed cross_lingual '
+         'items are outside Qwen3 pretraining. The direction is not obvious '
+         'either: contamination would raise accuracy on the contaminated '
+         'items, and the card predicts per-item accuracy, so it could either '
+         'help or hurt the AUC depending on whether the circuit-overlap score '
+         'tracks memorized items. That is a reason to record it, not to '
+         'dismiss it.',
+)
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -58,6 +138,16 @@ def main() -> None:
                         help="Top-K fraction for circuit overlap (default: 0.01)")
     parser.add_argument("--batch_size",       type=int,   default=4,
                         help="Items per attribution forward pass (default: 4)")
+    parser.add_argument("--dtype",            default="bfloat16",
+                        help="Model weight dtype (default: bfloat16; float32 for a CPU run)")
+    # kwdagger renders a declared null default as the literal `None`, so a
+    # plain type=int rejects the card's own default (SMELL-MAG-08).
+    def _optional_int(text):
+        return None if str(text).strip() in ("", "None", "null") else int(text)
+    parser.add_argument("--max_train_items",  type=_optional_int, default=None,
+                        help="Cap on train items for the reference circuit (mock-runs; default: all)")
+    parser.add_argument("--max_test_items",   type=_optional_int, default=None,
+                        help="Cap on scored test items (mock-runs; default: all)")
     parser.add_argument("--results_fpath",    required=True,
                         help="Output JSON path")
     args = parser.parse_args()
@@ -112,6 +202,9 @@ def main() -> None:
             models_root=args.models_root,
             k_fraction=args.k_fraction,
             batch_size=args.batch_size,
+            dtype=args.dtype,
+            max_train_items=args.max_train_items,
+            max_test_items=args.max_test_items,
         )
         comparison_df = predictor(helm_runs=model_runs)
 

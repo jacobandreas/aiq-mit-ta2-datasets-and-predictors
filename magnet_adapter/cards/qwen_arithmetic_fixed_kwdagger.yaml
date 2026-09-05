@@ -1,0 +1,243 @@
+# CircuitOverlap as a kwdagger pipeline.
+#
+# Sibling of qwen_arithmetic_fixed.yaml, which is untouched and still runs.
+# Same technique, same predictor, same artifact -- what changes is that MAGNET
+# drives a kwdagger DAG from outside instead of resolving the work inside a
+# symbol, so the node's command is the unit that can be containerized, leased
+# and scheduled on tmux or Slurm.
+#
+# ONE card for the technique. Everything that varies is an algo_param with a
+# default, addressable from the matrix below or overridden per invocation with
+# `--params`. There is deliberately no second card for a different grid.
+#
+# No code changed to make this work. `run_predictor_card.py` already writes
+# {"result": {"auc_by_model": ..., "summary": {...}}}, and `summary` is flat and
+# numeric, so pointing the generic loader's metrics path at `result.summary`
+# lifts n_models / mean_auc / min_auc into metrics.circuit_overlap.* with no
+# custom load_result and no change to the predictor.
+
+name: mit_circuit_overlap
+
+title: "CircuitOverlap Predictor — Qwen3 / arithmetic_fixed (kwdagger)"
+
+description: |
+  The circuit overlap predictor should achieve above-chance AUC when predicting
+  per-instance accuracy on the arithmetic_fixed cross_lingual evaluation split
+  for Qwen3 base models.
+
+  The predictor is fit on the HELM TRAIN split (english + symbolic examples) and
+  evaluated on the HELM TEST split (spanish + italian examples). AUC is computed
+  against ground-truth exact-match labels.
+
+  One model per cell, so `mean_auc` over `auc_by_model` is that model's AUC.
+  Sweeping models means adding run_spec_pattern values to the matrix, not
+  writing another card.
+
+version: 1.0
+
+organizations:
+  - MIT
+
+submitter:
+  name: MIT TA2 Team
+  email: jda@mit.edu
+
+tags:
+  - qwen
+  - predictor
+  - circuit_overlap
+  - arithmetic
+  - cross_lingual
+  - instance_prediction
+  - kwdagger
+
+links:
+  - title: "darpa3 (predictor source)"
+    url: "https://github.com/mit-ll/darpa3"
+    type: "software"
+  - title: "arithmetic_fixed dataset"
+    url: "https://github.com/mit-ll/aiq-mit-ta2"
+    type: "dataset"
+
+# What this card's verdict stands on.
+#
+# MIT has no formalization of its own, and the honest minimum is not "nothing".
+# theory/lean/Conjectures/Circuits.lean states this card's question directly:
+# is a circuit a property of the FUNCTION the network computes, or of its
+# PARAMETERIZATION? Hidden units carry a permutation symmetry, and every
+# per-unit attribution moves with it.
+#
+# Within one model that is harmless -- the reference circuit is built from the
+# same model's own correct examples, so a relabelling moves both sides together
+# -- and `jaccard_invariant_of_shared_permutation` says so. That is the
+# deployed case and it is sound. The exposure is entirely in the Phase-2
+# extension, which is why it is worth recording BEFORE Phase 2 rather than
+# during it.
+#
+# All three Circuits statements are `sorry`, hence `motivates` throughout: a
+# motivates link deliberately creates no premise-coverage obligation, which is
+# the honest encoding for an open question. The AUC threshold is a different
+# kind of claim and grounds on the shared hygiene statements instead.
+#
+# `empirical_sources` is read with `ast`; nothing is imported, so auditing this
+# card never needs torch, transformers or a GPU. The annotations sit at the
+# code sites, so they move with the code instead of rotting the way a
+# line-numbered reference would.
+#
+# The unaccounted premise this is meant to surface is `hn_sufficient`: the card
+# asserts an AUC 0.15 above chance and nothing anywhere computes whether the
+# cross_lingual split resolves 0.15 at any stated confidence. `max_test_items`
+# in the matrix can shrink that split with no effect on the reported number.
+theory:
+  indexes:
+    - ../../theory/indexes/teams.yaml
+    - ../../theory/indexes/conjectures.yaml
+    - ../../theory/indexes/hygiene.yaml
+
+  empirical_sources:
+    - ../../predictors/circuit_overlap/overlap.py
+    - ../run_predictor_card.py
+
+  links:
+    - relation: tests
+      ref: AIQ.Teams.CircuitOverlap.jaccard_topK_relabel
+      note: >
+        Relabelling hidden units leaves the overlap unchanged, so the within-model
+        comparison this card performs measures the model rather than the order its
+        units are stored in. Proved.
+    - relation: motivates
+      ref: AIQ.Teams.CircuitOverlap.jaccard_not_invariant_of_one_sided_image
+      note: >
+        And where that stops: permuting one side alone takes the overlap from 1
+        to 0, which is the cross-model situation. Alignment is required there.
+    - relation: approximates
+      ref: AIQ.Teams.CircuitOverlap.jaccard_le_one
+      note: >
+        The predictor ranks items by circuit overlap, which this bounds. What is
+        NOT established is that the overlap is a property of the function rather
+        than the parameterization -- that is open, in AIQ.Conjectures.Circuits.
+    - relation: motivates
+      ref: AIQ.Conjectures.Circuits.crossModel_jaccard_not_functional
+      note: >
+        Not a defect in this card -- a constraint on where it can be taken.
+        BAA Phase 2 asks whether similar architectures yield similar natural
+        classes, which requires comparing circuits across independently
+        trained models. If this conjecture holds, cross-model overlap is not a
+        function of the functions being compared, and that question is not
+        answerable with this quantity as it stands. The fix is an alignment
+        step between unit labellings, and knowing it before Phase 2 begins is
+        the point of stating it now.
+    - relation: motivates
+      ref: AIQ.Conjectures.Circuits.jaccard_invariant_of_shared_permutation
+      note: >
+        The within-model case, which this card actually runs, and which the
+        conjecture says is sound. Recorded as bound rather than left blank so
+        the boundary is visible: it is the extension that is in question, not
+        the deployed measurement. The selector premise `hS` is discharged in
+        source -- `topk_indices_abs` is a top-k-by-magnitude rule that reads
+        scores and never unit names.
+    - relation: motivates
+      ref: AIQ.Conjectures.Circuits.alignedJaccard_is_functional
+      note: >
+        The repair, at the cost of a matching problem over unit labellings.
+        Recorded so that the ledger carries the exit as well as the obstacle.
+        `hab` is `ignores` in source rather than `assumes`: no alignment is
+        searched here, which is the right choice for a within-model card and
+        the wrong one the moment two models are compared.
+
+claim:
+  python: |
+    m = metrics.circuit_overlap
+    threshold = 0.65
+
+    # A cell that produced no usable AUC did not test the claim. MAGNET maps
+    # AssertionError -> FALSIFIED and anything else -> INCONCLUSIVE; scoring
+    # "the predictor could not run" as "the claim is false" would report a
+    # team's finding as refuted by a run that never tested it.
+    if m.n_models < 1:
+        raise RuntimeError(
+            'no models matched run_spec_pattern -- check helm_runs_path'
+        )
+
+    print(f"[circuit_overlap] mean_auc={m.mean_auc:.4f} over {m.n_models} model(s)")
+    assert m.mean_auc >= threshold, (
+        f"CircuitOverlap AUC ({m.mean_auc:.3f}) is below threshold "
+        f"({threshold:.2f}) on arithmetic_fixed/cross_lingual"
+    )
+
+# Tie the snapshot to the matrix this invocation requested. Results in the
+# shared DAG root from another grid are not contamination, but a card that
+# reports a verdict should say which cells it read.
+evidence:
+  scope: requested
+
+symbols:
+  metrics.circuit_overlap.mean_auc:
+    metadata:
+      display_name: "CircuitOverlap AUC"
+      display: True
+      define_metric:
+        objective: maximize
+        aggregation_strategy:
+          type: 'mean'
+
+  metrics.circuit_overlap.n_models:
+    metadata:
+      display_name: "Models Scored"
+      display: True
+
+kwdagger:
+  result_node: circuit_overlap
+
+  pipeline:
+    nodes:
+      circuit_overlap:
+        # Containerized execution is opt-in per node class, and a card that
+        # declares its DAG as data gets kwdagger's plain YamlProcessNode unless
+        # it names MAGNET's MagnetProcessNode here. Without this key
+        # `--container_image` is accepted, stored and never read: a green run
+        # that containerized nothing. Inert until an image is named, so the
+        # same card still runs on the host.
+        class: magnet.process_node.MagnetProcessNode
+        # A wrapper, not the runner directly: a cmd_queue tmux worker inherits
+        # NOTHING, so a bare `python` there is whatever the login shell exposes
+        # -- missing torch, or a different interpreter that scores something
+        # else. The wrapper resolves the interpreter from its own location and
+        # fails fast. kwdagger formats the declared params onto the CLI as
+        # --key=value, which is the interface run_predictor_card.py exposes.
+        # Relative on purpose: the card carries no evaluator's machine, so
+        # it resolves against the job's cwd -- under Slurm that is sbatch's
+        # --chdir default, i.e. wherever magnet was invoked from.
+        # scripts/run_mit_circuit_overlap.sh cd's to the submodule first,
+        # and the wrapper re-anchors from its own location, so this is the
+        # only cwd-sensitive step in the node.
+        executable: "bash magnet_adapter/run_predictor_env.sh"
+        algo_params:
+          # Relative by default so the card carries no evaluator's machine.
+          # The runner passes absolute values via --params. See SMELL-MIT-03.
+          helm_runs_path: "../aiq-mit-ta2/benchmark_output"
+          run_spec_pattern: "arithmetic_fixed*Qwen*"
+          k_fraction: 0.01
+          batch_size: 4
+          # bfloat16 on a GPU; float32 is what a CPU mock-run wants.
+          dtype: bfloat16
+          # Caps on what goes in, declared so a mock-run can set them from
+          # the matrix. null = every item, which is the card's measurement.
+          max_train_items: null
+          max_test_items: null
+        out_paths:
+          results_fpath: results.json
+        primary_out_key: results_fpath
+        result:
+          # The predictor's flat numeric block. Lifted to metrics.circuit_overlap.*
+          metrics: 'result.summary'
+          # run_predictor_card.py writes no ProcessContext block, so there is
+          # nothing to parse for resolved_params.
+          info: null
+
+  # Single-valued axes are defaults you override, not the card's identity.
+  # e.g. --params "matrix: {circuit_overlap.k_fraction: [0.005, 0.01, 0.05]}"
+  matrix:
+    circuit_overlap.run_spec_pattern: "arithmetic_fixed*Qwen*"
+    circuit_overlap.k_fraction: 0.01
+    circuit_overlap.batch_size: 4

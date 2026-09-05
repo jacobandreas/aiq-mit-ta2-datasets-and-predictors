@@ -1,0 +1,372 @@
+# Open questions about the LIMITS of evaluation, stated in Lean 4.
+#
+# Converted from the legacy index schema by theory/convert_index.py; the prior
+# version is in git history and carried the same 14 statements. Source of truth
+# is theory/lean/Conjectures/*.lean, typechecked by theory/lean/check.sh.
+#
+# All 14 are `sorry`. That is the honest status and the point: the BAA asks TA1
+# to prove possibility AND LIMITS of generalization, and a limits result is a
+# claim about what ANY evaluation procedure can certify from given evidence --
+# which is why no TA1 team will produce one. Several are expected to resolve
+# NEGATIVE; a refutation retires an approach before anything is built on it.
+#
+# These entries are `kind: conjecture` because their axiom set contains sorryAx.
+# A card linking here should use `motivates` (which creates no premise-coverage
+# obligation), not `tests`.
+
+schema_version: 1
+formalization:
+  system: lean4
+entries:
+- id: AIQ.Conjectures.CertificationFloor.no_procedure_below_floor
+  kind: conjecture
+  declaration: AIQ.Conjectures.CertificationFloor.no_procedure_below_floor
+  statement: 'No evaluation procedure certifies a tolerance below the minimax floor -- not
+    with a better estimator, not with a sharper theory, not with more structure in the model.
+
+
+    CONCLUSION: minimaxFloor n delta <= epsilon
+
+
+    NOTE: A Le Cam / Fano two-point argument. The 1/sqrt(n) shape is forced; the CONSTANT
+    is what is open, and a sharp constant is the difference between a rhetorical claim and
+    a per-card predicate. Applies to every card on the program, including those with no theory
+    of their own.
+
+
+    STRUCTURAL (data binders, not assumptions -- excluded from premise coverage): proc: any
+    procedure mapping n observed scores to a predicted population value
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/CertificationFloor.lean
+  premises:
+  - id: hcert
+    statement: the procedure certifies (epsilon, delta) UNIFORMLY over all bounded-score distributions
+      -- uniformity is what makes it a guarantee rather than a lucky fit
+  - id: hdelta1
+    statement: the confidence is better than a coin flip (delta < 1/2)
+- id: AIQ.Conjectures.CertificationFloor.baa_phase1_requires_queries
+  kind: conjecture
+  declaration: AIQ.Conjectures.CertificationFloor.baa_phase1_requires_queries
+  statement: 'The BAA Phase-1 number instantiated: certifying 5% at 95% requires at least
+    this many queries per evaluated cell, for anyone.
+
+
+    CONCLUSION: 81 <= n
+
+
+    NOTE: The form a card can act on -- an integer to compare its sample size against. Hoeffding
+    gives 738 as sufficient; the conjectured floor gives 81 as necessary. The interval [81,
+    738] is where "within 5%" is neither known-achievable nor known-impossible, and narrowing
+    it is the concrete research question. A card reporting a 5% result from a sample in that
+    range is making a claim nobody can currently adjudicate.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/CertificationFloor.lean
+  premises:
+  - id: hcert
+    statement: some procedure certifies 5% at 95% from n queries
+- id: AIQ.Conjectures.CertificationFloor.sampleMean_certifies
+  kind: conjecture
+  declaration: AIQ.Conjectures.CertificationFloor.sampleMean_certifies
+  statement: 'Above the Hoeffding size, the sample mean certifies (epsilon, delta).
+
+
+    CONCLUSION: Certifies sampleMean BoundedScores epsilon delta
+
+
+    NOTE: Routine, and the achievable half of the bracket. Worth proving first: it converts
+    "within 5%" into a number of queries, which is the single most useful thing this file
+    can hand a card.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/CertificationFloor.lean
+  premises:
+  - id: hn
+    statement: the sample size is at least log(2/delta) / (2 epsilon^2)
+- id: AIQ.Conjectures.Conformal.no_finite_distribution_free_conditional_coverage
+  kind: conjecture
+  declaration: AIQ.Conjectures.Conformal.no_finite_distribution_free_conditional_coverage
+  statement: 'A prediction band valid conditionally against every distribution has infinite
+    measure everywhere. Distribution-free per-problem coverage is vacuous.
+
+
+    CONCLUSION: for every x, volume (C x) = infinity
+
+
+    NOTE: KNOWN in the literature (Vovk; Barber-Candes-Ramdas-Tibshirani). Formalization work,
+    not open research, and therefore the highest-value first target: it yields a sentence
+    the program can use immediately -- "within 5% for 95% success" is attainable marginally
+    and provably unattainable per-problem without distributional assumptions. That tells every
+    team which of the two readings they are claiming.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/Conformal.lean
+  premises:
+  - id: hC
+    statement: the band achieves conditional coverage against EVERY distribution, the band
+      being fixed in advance
+  - id: halpha
+    statement: the miscoverage level is nontrivial (0 < alpha < 1)
+- id: AIQ.Conjectures.Conformal.validity_does_not_imply_efficiency
+  kind: conjecture
+  declaration: AIQ.Conjectures.Conformal.validity_does_not_imply_efficiency
+  statement: 'Marginal validity does not order bands by width: a valid band can be wider everywhere
+    than an invalid one.
+
+
+    CONCLUSION: there exist P, C, D with C valid, D invalid, and D uniformly tighter
+
+
+    NOTE: The finding this makes precise: a card asserting coverage AND tightness is asserting
+    one proved thing and one unproved thing in the same breath. Nothing in conformal theory
+    delivers efficiency, and the natural repairs are all distributional.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/Conformal.lean
+- id: AIQ.Conjectures.Composition.linear_growth_of_nonexpansive
+  kind: conjecture
+  declaration: AIQ.Conjectures.Composition.linear_growth_of_nonexpansive
+  statement: 'With a non-expansive composition step, compositional error grows linearly in
+    depth, so a defect measured at depth 1 bounds the error at every depth.
+
+
+    CONCLUSION: dist (answer t) (gold t) <= tau + depth(t) * epsilon
+
+
+    NOTE: The possibility half of the Phase-2 question: evaluate shallow, certify deep. Paired
+    with `geometric_growth_is_tight`, the two reduce an open-ended research question to ONE
+    MEASURABLE QUANTITY -- estimate the composition step''s sensitivity L on the deployed
+    decomposition and you know which regime you are in. That estimate is a runtime check.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/Composition.lean
+  premises:
+  - id: hdef
+    statement: the per-node compositional defect is at most epsilon -- what operadic consistency
+      measures
+  - id: hlip
+    statement: the composition step is L-Lipschitz
+  - id: hL
+    statement: the composition step is non-expansive (L <= 1) -- the pivotal hypothesis
+  - id: hleaf
+    statement: the system is accurate to tau on atomic questions -- what a point evaluation
+      measures
+  - id: hgold
+    statement: the ground truth is itself compositional; without this there is nothing to
+      generalize to and the compositional programme is measuring an artifact
+- id: AIQ.Conjectures.Composition.geometric_growth_is_tight
+  kind: conjecture
+  declaration: AIQ.Conjectures.Composition.geometric_growth_is_tight
+  statement: 'Above L = 1 the geometric bound is attained, so no measurement at bounded depth
+    certifies unbounded depth.
+
+
+    CONCLUSION: there is a system attaining the geometric bound at every depth
+
+
+    NOTE: The limits half. If true, compositional generalization has a hard ceiling no amount
+    of shallow evaluation escapes -- exactly the kind of result the BAA metric text names
+    and nobody is producing.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/Composition.lean
+  premises:
+  - id: hL
+    statement: the composition step is expansive (L > 1)
+- id: AIQ.Conjectures.Composition.certifiableDepth_is_sharp
+  kind: conjecture
+  declaration: AIQ.Conjectures.Composition.certifiableDepth_is_sharp
+  statement: '(rho - tau) / epsilon is exactly the frontier: inside it the tolerance holds,
+    past it a system consistent with the same measurements violates it.
+
+
+    CONCLUSION: dist (answer t) (gold t) <= rho
+
+
+    NOTE: The BAA Phase-2 metric made computable, from two quantities an evaluation already
+    produces: measured per-node defect and leaf accuracy give the depth at which a 5% claim
+    stops being supportable.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/Composition.lean
+  premises:
+  - id: hk
+    statement: the question's depth is within the certifiable depth
+- id: AIQ.Conjectures.Similarity.no_entropy_bound
+  kind: conjecture
+  declaration: AIQ.Conjectures.Similarity.no_entropy_bound
+  statement: 'No constant makes answer-distribution entropy an upper bound on paraphrase brittleness.
+
+
+    CONCLUSION: for every c > 0 there is a population with c * meanEntropy < brittleFraction
+
+
+    NOTE: EXPECTED TO BE TRUE, refuting the useful direction. Witness: profiles with mass
+    1-delta on the gold answer are brittle for every delta > 0 while their normalized entropy
+    tends to 0. Cheap to prove and worth proving: it retires "entropy as a free proxy for
+    robustness" before anyone builds on it. Directly addresses BAA Fig. 1''s "what is the
+    relevant notion of similarity encoded by the model?"
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/Similarity.lean
+- id: AIQ.Conjectures.Similarity.brittleAt_le_of_entropy
+  kind: conjecture
+  declaration: AIQ.Conjectures.Similarity.brittleAt_le_of_entropy
+  statement: 'At a fixed disagreement margin, entropy does control brittleness.
+
+
+    CONCLUSION: there is c > 0 with brittleFractionAt theta <= c * meanEntropy
+
+
+    NOTE: The repair, and the query-efficiency result the naive version failed to be: entropy
+    is free, paraphrases cost a full evaluation each. If true, margin-brittleness is certifiable
+    without running the paraphrases -- BAA section 94''s metric on a capability the program
+    cares about. How badly c degrades as the margin shrinks is the interesting part.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/Similarity.lean
+  premises:
+  - id: htheta
+    statement: a fixed disagreement margin theta in (0,1)
+- id: AIQ.Conjectures.Similarity.strict_le_any
+  kind: conjecture
+  declaration: AIQ.Conjectures.Similarity.strict_le_any
+  statement: 'Correct-on-all is at most correct-on-any, GIVEN an invariant linking the separately-computed
+    columns the two are read from.
+
+
+    CONCLUSION: mean(StrictCorrect) <= mean(AnyCorrect)
+
+
+    NOTE: Described elsewhere as a trivial lattice fact. It is not: the two quantities are
+    computed from different columns -- one from a modal label and a mode share, the other
+    from a paraphrase-correctness count -- and nothing forces them to agree. `hinv` is exactly
+    what a runtime check should verify, and it is one pass over the data.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/Similarity.lean
+  premises:
+  - id: hinv
+    statement: 'the columns are consistent: degenerate-and-correct implies at-least-one-correct'
+- id: AIQ.Conjectures.Circuits.crossModel_jaccard_not_functional
+  kind: conjecture
+  declaration: AIQ.Conjectures.Circuits.crossModel_jaccard_not_functional
+  statement: 'Two networks computing the same function can have different circuit overlap
+    against a fixed reference, so cross-model overlap is not a function of the functions compared.
+
+
+    CONCLUSION: there exist reparameterizations a, b of one network with different overlap
+
+
+    NOTE: Hidden units carry a permutation symmetry; per-unit attribution moves with it. If
+    this holds, the Phase-2 question -- do similar architectures yield similar natural classes
+    -- is not answerable with this quantity as it stands, and the extension needs an alignment
+    step designed in from the start. A negative result delivered BEFORE Phase 2 is worth more
+    than the same result found during it.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/Circuits.lean
+- id: AIQ.Conjectures.Circuits.jaccard_invariant_of_shared_permutation
+  kind: conjecture
+  declaration: AIQ.Conjectures.Circuits.jaccard_invariant_of_shared_permutation
+  statement: 'When both circuits come from the same relabelled network, overlap is unchanged.
+
+
+    CONCLUSION: jaccard is invariant under a shared relabelling
+
+
+    NOTE: The deployed case is within-model -- the reference circuit is built from the same
+    model''s own correct examples -- so this records that use as sound rather than merely
+    unexamined. Bookkeeping to prove; valuable to state, because it delimits exactly where
+    the trouble starts.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/Circuits.lean
+  premises:
+  - id: hS
+    statement: the selector depends only on scores, not on unit names -- any top-k rule qualifies
+- id: AIQ.Conjectures.Circuits.alignedJaccard_is_functional
+  kind: conjecture
+  declaration: AIQ.Conjectures.Circuits.alignedJaccard_is_functional
+  statement: 'Optimizing overlap over alignments recovers a quantity that IS a function of
+    the computed functions.
+
+
+    CONCLUSION: the alignment-optimal overlap agrees on reparameterizations
+
+
+    NOTE: The repair, at the cost of a matching problem. Whether that matching is tractable
+    at transformer width is a follow-on empirical question.
+
+
+    PROVENANCE: axioms [''sorryAx''], review ''draft''.'
+  source_path: theory/lean/Conjectures/Circuits.lean
+  premises:
+  - id: hab
+    statement: the two attributions are reparameterizations of one another
+- id: AIQ.Conjectures.CertificationFloor.baa_phase1_hoeffding_suffices
+  kind: conjecture
+  declaration: AIQ.Conjectures.CertificationFloor.baa_phase1_hoeffding_suffices
+  statement: 'The achievable side of the BAA''s "within 5% error for 95% success":
+    738 queries suffice. hoeffdingSize (5/100) (5/100) = log 40 / 0.005 is about
+    737.8.
+
+
+    CONCLUSION: Certifies sampleMean BoundedScores (5/100) (5/100), for any n >= 738.
+
+
+    NOTE: this is the upper bracket. Against a conjectured floor of 81
+    (no_procedure_below_floor), the interval [81, 738] is where "within 5%" is
+    neither known-achievable nor known-impossible, and narrowing it is the concrete
+    research question. Every run on this program sits below both ends of it, which
+    is why a threshold card grounding on Hygiene.Inference.threshold_exceeds_sampling_error
+    should expect hn_sufficient to stand unaccounted.
+
+
+    PROVENANCE: axioms [sorryAx], review ''draft''.'
+  source_path: theory/lean/Conjectures/CertificationFloor.lean
+  premises:
+  - id: hn
+    type: 'hn : 738 <= n'
+    statement: the query budget is at least the Hoeffding sufficient sample for eps
+      = delta = 0.05
+- id: AIQ.Conjectures.Conformal.split_conformal_marginal_coverage
+  kind: conjecture
+  declaration: AIQ.Conjectures.Conformal.split_conformal_marginal_coverage
+  statement: 'The marginal counterpart of the conditional-coverage impossibility is
+    attainable, which is what makes the impossibility a CHOICE between two readings
+    of "95% coverage" rather than a dead end.
+
+
+    CONCLUSION: there exists a band C with MarginalCoverage P C alpha and finite
+    width everywhere.
+
+
+    NOTE: the Lean counterpart of the informal
+    Hygiene.Conformal.marginal_coverage_of_exchangeable. A card claiming 95% coverage
+    should say which reading it means; only the marginal one is attainable
+    distribution-free, and substituting a Gaussian mean-plus-or-minus-two-sigma
+    interval is a strictly stronger and unproven claim that looks identical in the
+    output.
+
+
+    PROVENANCE: axioms [sorryAx], review ''draft''.'
+  source_path: theory/lean/Conjectures/Conformal.lean
+  premises:
+  - id: halpha
+    type: 'hα : 0 < α, hα1 : α < 1'
+    statement: the nominal miscoverage level is a proper probability

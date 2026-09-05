@@ -1,0 +1,187 @@
+# Shared evaluation-hygiene statements.
+#
+# Borrowed from `magnet/theory/data/hygiene.yaml` on the aiq-magnet branch
+# `dev/theory-annotations`, which is NOT an ancestor of the pinned execution
+# branch, and converted from that branch's index schema to the one the pinned
+# `magnet.theory.index.load_index()` actually reads. The statements and the
+# hypothesis binder names are unchanged: binder names are the contract, since
+# cards annotate against them.
+#
+# WHY THIS EXISTS: most empirical evaluation claims are not backed by a bespoke
+# theorem and never will be. They are not assumption-free either -- they lean on
+# the same handful of premises over and over. This library is where a card with
+# no theory of its own attaches its assumptions. "There is no theorem here" is a
+# finding worth recording precisely; "there is nothing to say about this card"
+# is not, and it is usually false.
+#
+# NOTHING HERE IS FORMALIZED. These entries carry no `declaration:` and no
+# `formalization:` block, deliberately: naming a Lean declaration that does not
+# exist is exactly the failure this machinery is meant to prevent. Hoeffding and
+# split-conformal coverage are both within reach of Mathlib and are the obvious
+# first two to actually prove; the measurement bundle is definitional and is not
+# a proof target at all. Stating them is still most of the value, because a
+# statement cannot be written without naming its hypotheses.
+#
+# The workhorse is Concentration.mean_within_tolerance. It turns "where does the
+# 0.05 threshold come from?" from a rhetorical question into a computable one.
+
+schema_version: 1
+
+entries:
+
+  - id: Hygiene.Concentration.mean_within_tolerance
+    kind: theorem
+    statement: >
+      Hoeffding's inequality. A sample mean of bounded iid draws is within a
+      stated tolerance of the population mean, with a stated confidence, once
+      the sample is large enough.
+
+      CONCLUSION: P(|sampleMean X n - populationMean X| >= eps) <= delta,
+      whenever n >= ceil(log(2/delta) / (2 * eps^2)).
+
+      NOTE: the sample-size premise `hn` is the one worth computing rather than
+      asserting. At eps = 0.05 and delta = 0.05 it needs n >= 738; at eps = 0.01
+      it needs n >= 18445. Many cards report thresholds finer than their
+      evaluation sets can support, and this is the statement that makes that
+      visible.
+
+      STATUS: stated, not formalized.
+    premises:
+      - id: hiid
+        statement: >
+          the evaluation instances are independent and identically distributed
+          draws from the target distribution
+      - id: hbdd
+        statement: >
+          the per-instance score is bounded in a known range, typically [0,1]
+      - id: hn
+        statement: >
+          the sample size is at least the Hoeffding bound for the asserted
+          tolerance and confidence
+
+  - id: Hygiene.Concentration.paired_difference_within_tolerance
+    kind: theorem
+    statement: >
+      A difference of two sample means, measured on paired instances, is within
+      a stated tolerance of the population difference. The form most threshold
+      cards actually take -- an accuracy drop, a lift, a gap.
+
+      CONCLUSION: P(|(sampleMean A n - sampleMean B n) - (populationMean A -
+      populationMean B)| >= eps) <= delta, whenever n >= ceil(log(2/delta) /
+      (2 * eps^2)) for the per-instance difference.
+
+      NOTE: pairing matters. The tolerance is on the difference sequence, not on
+      each arm separately, so a card that evaluates both arms on the same
+      instances needs a smaller n than one that does not. A card that pairs but
+      computes the bound as though it did not is being conservative; one that
+      does not pair but assumes it did is not.
+
+      STATUS: stated, not formalized.
+    premises:
+      - id: hiid
+        statement: the instances are iid draws from the target distribution
+      - id: hbdd
+        statement: both per-instance scores are bounded in a known range
+      - id: hpaired
+        statement: >
+          both conditions are evaluated on the same instances, so the difference
+          is a per-instance quantity
+      - id: hn
+        statement: >
+          the sample size is at least the bound for the asserted tolerance and
+          confidence
+
+  - id: Hygiene.Conformal.marginal_coverage_of_exchangeable
+    kind: theorem
+    statement: >
+      Split (inductive) conformal prediction attains its nominal marginal
+      coverage, distribution-free, under exchangeability of the calibration and
+      test scores.
+
+      CONCLUSION: 1 - alpha <= P(Y_test in C_alpha(X_test)) <= 1 - alpha +
+      1/(n_cal + 1).
+
+      NOTE: an order-statistics argument, not a distributional one -- no
+      assumption is made about the residuals. That is exactly what makes
+      substituting a Gaussian interval (mean plus or minus two standard
+      deviations) a strictly stronger and unproven claim, even though it looks
+      like the same 95 percent.
+
+      STATUS: stated, not formalized.
+    premises:
+      - id: hexch
+        statement: >
+          the calibration and test nonconformity scores are exchangeable
+      - id: hsplit
+        statement: >
+          the calibration split is used ONLY for the quantile: the predictor,
+          the score function, and any model selection are fixed before it is
+          touched
+      - id: hscore_fixed
+        statement: >
+          the nonconformity score function does not depend on the calibration
+          data
+      - id: hquantile
+        statement: >
+          the interval is formed from the empirical (1-alpha) quantile of the
+          calibration scores
+
+  - id: Hygiene.Inference.threshold_exceeds_sampling_error
+    kind: theorem
+    statement: >
+      An observed statistic exceeding a threshold is evidence about the
+      population only when the threshold exceeds what sampling noise alone would
+      produce, at the confidence being claimed, after accounting for how many
+      comparisons were made.
+
+      CONCLUSION: if the observed statistic exceeds `threshold` and `threshold`
+      exceeds the sampling error at level delta / m, then the population
+      statistic is positive with confidence 1 - delta.
+
+      NOTE: this is where a bare "drag >= 0.05" or "AUC >= 0.65" card should
+      ground when it has nothing else. Its three premises are the three
+      questions to ask such a card, and all three are checkable from the card
+      itself: was the threshold fixed in advance, is n big enough, and how many
+      comparisons were run.
+
+      STATUS: stated, not formalized.
+    premises:
+      - id: hprespecified
+        statement: the threshold was fixed before the results were seen
+      - id: hn_sufficient
+        statement: >
+          the sample size supports resolving a difference of this size at the
+          claimed confidence
+      - id: hmultiple
+        statement: >
+          the confidence level accounts for the number of comparisons in the
+          family -- models, datasets, metrics, and sweep points all count
+
+  - id: Hygiene.Measurement.measured_score_tracks_construct
+    kind: definition
+    statement: >
+      What a card measures is what it claims to be measuring: the automatic
+      scorer tracks the construct, the evaluation data is not in training, and
+      the measurement is stable under nuisance variation.
+
+      CONCLUSION: the measured statistic is an estimate of the construct the
+      claim is about.
+
+      NOTE: DEFINITIONAL, not a theorem, and listed as a statement anyway so
+      that cards have a place to record these assumptions instead of leaving
+      them unwritten. Do not try to prove it. Its value is entirely in forcing
+      three questions to be answered per card, and in making an unanswered one
+      show up as unaccounted.
+    premises:
+      - id: hscorer
+        statement: >
+          the automatic scorer agrees with the construct it proxies -- exact
+          match for correctness, an n-gram overlap for translation quality, a
+          judge model for helpfulness
+      - id: hcontam
+        statement: >
+          the evaluation instances are not in the models' training data
+      - id: hstable
+        statement: >
+          the measurement is stable under nuisance variation: decoding seed,
+          prompt ordering, formatting, and hardware
