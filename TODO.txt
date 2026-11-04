@@ -1,0 +1,31 @@
+TODO
+
+- Decide which answer the MAGNET circuit overlap adapter should score
+  (magnet_adapter/circuit_overlap_predictor.py, _scenario_state_to_items).
+
+  Right now it scores the gold answer (the instance's correct reference). This
+  matches the standalone darpa3 pipeline, whose items carry the gold y. The
+  downside is that the predictor sees the reference answer at test time.
+
+  The alternative is to score the model's own greedy completion
+  (scenario_state.request_states.result.completions[0].text). That needs no
+  reference at test time, but on arithmetic_fixed/cross_lingual (Qwen3-4B) it
+  gave these AUCs:
+
+                               circuit overlap   token prob
+      gold answer (standalone)      0.687            0.597
+      model's own completion        0.41             0.86
+
+  So scoring the model's own completion makes token prob a very strong
+  baseline and pushes circuit overlap below chance. Decide which setting the
+  cards should report, or report both.
+
+  Update (2026-11-03): the adapter now adds a leading space to the gold answer
+  (without it, "Answer:" + "A" tokenizes as one ":A" token and
+  "fa" + "dodici" as f/ad/od/ici). With the space, token prob on the gold
+  answer is close to an oracle under greedy decoding (AUC 0.96-1.00 on all
+  five splits), so it is not a fair baseline, and circuit overlap falls to
+  0.39-0.48 on four of the five splits (0.74 on arithmetic_by_skill). The good
+  circuit overlap AUCs from the standalone pipeline and the no-space adapter
+  (0.52-0.87) only show up when the tokenization is broken. Work out why
+  before trusting either set of numbers.

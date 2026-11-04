@@ -38,6 +38,9 @@ PREDICTORS = {
     "ensemble":        "predictors.ensemble.predictor.EnsemblePredictor",
 }
 
+# ensemble_avg and ensemble_rank are computed offline from saved scores; not fit-predict predictors
+ALL_PREDICTORS = list(PREDICTORS) + ["ensemble_avg", "ensemble_rank"]
+
 
 def _load_predictor_class(name: str):
     module_path, cls_name = PREDICTORS[name].rsplit(".", 1)
@@ -223,12 +226,231 @@ def cmd_sweep(args: argparse.Namespace) -> None:
                      args.batch_size, args.k_fraction, args.force)
 
 
+# ── ensemble-avg ──────────────────────────────────────────────────────────────
+
+def _ensemble_avg_one(run_dir: Path, force: bool) -> None:
+    """Average circuit_overlap and linear_probe saved scores for one run dir."""
+    out_dir = run_dir / "predictor_ensemble_avg"
+    analysis_path = out_dir / "analysis.json"
+    if analysis_path.exists() and not force:
+        print(f"  [skip] {run_dir.name} — ensemble_avg already done")
+        return
+
+    co_val  = run_dir / "predictor_circuit_overlap" / "scores_val.jsonl"
+    co_test = run_dir / "predictor_circuit_overlap" / "scores_test.jsonl"
+    lp_val  = run_dir / "predictor_linear_probe"    / "scores_val.jsonl"
+    lp_test = run_dir / "predictor_linear_probe"    / "scores_test.jsonl"
+
+    for p in (co_val, co_test, lp_val, lp_test):
+        if not p.exists():
+            print(f"  [skip] {run_dir} — missing {p.name} for ensemble_avg")
+            return
+
+    co_val_rows  = _read_jsonl(co_val)
+    co_test_rows = _read_jsonl(co_test)
+    lp_val_rows  = _read_jsonl(lp_val)
+    lp_test_rows = _read_jsonl(lp_test)
+
+    val_scores  = [(a["score"] + b["score"]) / 2
+                   for a, b in zip(co_val_rows, lp_val_rows)]
+    test_scores = [(a["score"] + b["score"]) / 2
+                   for a, b in zip(co_test_rows, lp_test_rows)]
+    val_labels  = [int(r["correct"]) for r in co_val_rows]
+    test_labels = [int(r.get("correct", False)) for r in co_test_rows]
+
+    from predictors.base import analyze, write_analysis
+    results = analyze(val_scores, val_labels, test_scores, test_labels)
+    write_analysis(results, analysis_path)
+
+    _write_jsonl(out_dir / "scores_val.jsonl",
+                 [{"id": r["id"], "score": s, "correct": r.get("correct")}
+                  for r, s in zip(co_val_rows, val_scores)])
+    _write_jsonl(out_dir / "scores_test.jsonl",
+                 [{"id": r["id"], "score": s, "correct": r.get("correct")}
+                  for r, s in zip(co_test_rows, test_scores)])
+
+    print(f"    val AUC={results['val']['auc']:.3f}  "
+          f"test AUC={results['test']['auc']:.3f}  "
+          f"test F1={results['test']['f1_at_val_threshold']:.3f}")
+
+
+def _rank_normalize(scores: list) -> list:
+    """Map scores to [0, 1] percentile ranks (ties get averaged rank)."""
+    import numpy as np
+    from scipy.stats import rankdata
+    ranks = rankdata(scores, method="average")
+    return ((ranks - 1) / max(len(ranks) - 1, 1)).tolist()
+
+
+def _ensemble_rank_one(run_dir: Path, force: bool) -> None:
+    """Rank-normalize CO and LP scores then average for one run dir."""
+    out_dir = run_dir / "predictor_ensemble_rank"
+    analysis_path = out_dir / "analysis.json"
+    if analysis_path.exists() and not force:
+        print(f"  [skip] {run_dir.name} — ensemble_rank already done")
+        return
+
+    co_val  = run_dir / "predictor_circuit_overlap" / "scores_val.jsonl"
+    co_test = run_dir / "predictor_circuit_overlap" / "scores_test.jsonl"
+    lp_val  = run_dir / "predictor_linear_probe"    / "scores_val.jsonl"
+    lp_test = run_dir / "predictor_linear_probe"    / "scores_test.jsonl"
+
+    for p in (co_val, co_test, lp_val, lp_test):
+        if not p.exists():
+            print(f"  [skip] {run_dir} — missing {p.name} for ensemble_rank")
+            return
+
+    co_val_rows  = _read_jsonl(co_val)
+    co_test_rows = _read_jsonl(co_test)
+    lp_val_rows  = _read_jsonl(lp_val)
+    lp_test_rows = _read_jsonl(lp_test)
+
+    # Rank-normalize each predictor's scores independently on val and test
+    co_val_r  = _rank_normalize([r["score"] for r in co_val_rows])
+    lp_val_r  = _rank_normalize([r["score"] for r in lp_val_rows])
+    co_test_r = _rank_normalize([r["score"] for r in co_test_rows])
+    lp_test_r = _rank_normalize([r["score"] for r in lp_test_rows])
+
+    val_scores  = [(a + b) / 2 for a, b in zip(co_val_r, lp_val_r)]
+    test_scores = [(a + b) / 2 for a, b in zip(co_test_r, lp_test_r)]
+    val_labels  = [int(r["correct"]) for r in co_val_rows]
+    test_labels = [int(r.get("correct", False)) for r in co_test_rows]
+
+    from predictors.base import analyze, write_analysis
+    results = analyze(val_scores, val_labels, test_scores, test_labels)
+    write_analysis(results, analysis_path)
+
+    _write_jsonl(out_dir / "scores_val.jsonl",
+                 [{"id": r["id"], "score": s, "correct": r.get("correct")}
+                  for r, s in zip(co_val_rows, val_scores)])
+    _write_jsonl(out_dir / "scores_test.jsonl",
+                 [{"id": r["id"], "score": s, "correct": r.get("correct")}
+                  for r, s in zip(co_test_rows, test_scores)])
+
+    print(f"    val AUC={results['val']['auc']:.3f}  "
+          f"test AUC={results['test']['auc']:.3f}  "
+          f"test F1={results['test']['f1_at_val_threshold']:.3f}")
+
+
+def _ensemble_lr_one(run_dir: Path, force: bool) -> None:
+    """Fit LR meta-learner on rank-normalized saved CO+LP scores (no model needed)."""
+    out_dir = run_dir / "predictor_ensemble"
+    analysis_path = out_dir / "analysis.json"
+    if analysis_path.exists() and not force:
+        print(f"  [skip] {run_dir.name} — ensemble already done")
+        return
+
+    co_val  = run_dir / "predictor_circuit_overlap" / "scores_val.jsonl"
+    co_test = run_dir / "predictor_circuit_overlap" / "scores_test.jsonl"
+    lp_val  = run_dir / "predictor_linear_probe"    / "scores_val.jsonl"
+    lp_test = run_dir / "predictor_linear_probe"    / "scores_test.jsonl"
+
+    for p in (co_val, co_test, lp_val, lp_test):
+        if not p.exists():
+            print(f"  [skip] {run_dir} — missing {p.name} for ensemble")
+            return
+
+    co_val_rows  = _read_jsonl(co_val);  co_test_rows = _read_jsonl(co_test)
+    lp_val_rows  = _read_jsonl(lp_val);  lp_test_rows = _read_jsonl(lp_test)
+
+    import numpy as np
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.preprocessing import QuantileTransformer
+    from predictors.base import analyze, write_analysis, compute_auc
+
+    def _mat(rows_co, rows_lp):
+        X = np.column_stack([
+            np.clip([r["score"] for r in rows_co], -1e9, 1e9),
+            np.clip([r["score"] for r in rows_lp], -1e9, 1e9),
+        ])
+        return X
+
+    X_val_raw  = _mat(co_val_rows,  lp_val_rows)
+    X_test_raw = _mat(co_test_rows, lp_test_rows)
+
+    n_quantiles = min(len(co_val_rows), 1000)
+    scaler = QuantileTransformer(n_quantiles=n_quantiles,
+                                 output_distribution="uniform", random_state=0)
+    X_val  = scaler.fit_transform(X_val_raw)
+    X_test = scaler.transform(X_test_raw)
+
+    val_labels  = [int(r["correct"]) for r in co_val_rows]
+    test_labels = [int(r.get("correct", False)) for r in co_test_rows]
+
+    if len(np.unique(val_labels)) < 2:
+        print(f"  [skip] {run_dir} — val set has only one class")
+        return
+
+    lr = LogisticRegression(C=1.0, max_iter=1000, solver="lbfgs")
+    lr.fit(X_val, val_labels)
+
+    val_scores  = lr.predict_proba(X_val)[:, 1].tolist()
+    test_scores = lr.predict_proba(X_test)[:, 1].tolist()
+
+    coef = lr.coef_[0]
+    val_auc = compute_auc(val_scores, val_labels)
+    print(f"    meta-LR coef: CO={coef[0]:.3f}, LP={coef[1]:.3f}  val AUC={val_auc:.3f}")
+
+    results = analyze(val_scores, val_labels, test_scores, test_labels)
+    write_analysis(results, analysis_path)
+
+    _write_jsonl(out_dir / "scores_val.jsonl",
+                 [{"id": r["id"], "score": s, "correct": r.get("correct")}
+                  for r, s in zip(co_val_rows, val_scores)])
+    _write_jsonl(out_dir / "scores_test.jsonl",
+                 [{"id": r["id"], "score": s, "correct": r.get("correct")}
+                  for r, s in zip(co_test_rows, test_scores)])
+
+    print(f"    val AUC={results['val']['auc']:.3f}  "
+          f"test AUC={results['test']['auc']:.3f}  "
+          f"test F1={results['test']['f1_at_val_threshold']:.3f}")
+
+
+def cmd_ensemble_lr(args: argparse.Namespace) -> None:
+    """Fit LR meta-learner on rank-normalized saved CO+LP scores (no model needed)."""
+    runs_dir = Path(args.runs_dir)
+    run_dirs = sorted(
+        p.parent for p in runs_dir.rglob("metrics.json")
+        if (p.parent / "predictions_test.jsonl").exists()
+    )
+    print(f"Found {len(run_dirs)} completed run(s)")
+    for run_dir in run_dirs:
+        print(f"\n→ {run_dir.relative_to(runs_dir)}")
+        _ensemble_lr_one(run_dir, args.force)
+
+
+def cmd_ensemble_rank(args: argparse.Namespace) -> None:
+    """Rank-normalize CO and LP scores then average (no model needed)."""
+    runs_dir = Path(args.runs_dir)
+    run_dirs = sorted(
+        p.parent for p in runs_dir.rglob("metrics.json")
+        if (p.parent / "predictions_test.jsonl").exists()
+    )
+    print(f"Found {len(run_dirs)} completed run(s)")
+    for run_dir in run_dirs:
+        print(f"\n→ {run_dir.relative_to(runs_dir)}")
+        _ensemble_rank_one(run_dir, args.force)
+
+
+def cmd_ensemble_avg(args: argparse.Namespace) -> None:
+    """Compute average-ensemble of circuit_overlap and linear_probe scores."""
+    runs_dir = Path(args.runs_dir)
+    run_dirs = sorted(
+        p.parent for p in runs_dir.rglob("metrics.json")
+        if (p.parent / "predictions_test.jsonl").exists()
+    )
+    print(f"Found {len(run_dirs)} completed run(s)")
+    for run_dir in run_dirs:
+        print(f"\n→ {run_dir.relative_to(runs_dir)}")
+        _ensemble_avg_one(run_dir, args.force)
+
+
 # ── aggregate ─────────────────────────────────────────────────────────────────
 
 def cmd_aggregate(args: argparse.Namespace) -> None:
     """Collect all predictor analysis.json files into a single comparison table."""
     runs_dir = Path(args.runs_dir)
-    pred_names = list(PREDICTORS) if args.predictor == "all" else [args.predictor]
+    pred_names = ALL_PREDICTORS if args.predictor == "all" else [args.predictor]
 
     # Gather results per predictor
     all_results: dict[str, dict[str, dict]] = {}  # predictor → run_key → metrics
@@ -305,11 +527,26 @@ def main() -> None:
     ag = sub.add_parser("aggregate", help="Collect all analysis results into a comparison table")
     ag.add_argument("--runs-dir", default="runs")
     ag.add_argument("--predictor", default="all",
-                    choices=list(PREDICTORS) + ["all"])
+                    choices=ALL_PREDICTORS + ["all"])
+
+    ea = sub.add_parser("ensemble-avg", help="Average CO and LP saved scores (no model needed)")
+    ea.add_argument("--runs-dir", default="runs")
+    ea.add_argument("--force", action="store_true", help="Re-run even if output already exists")
+
+    er = sub.add_parser("ensemble-rank", help="Rank-normalize CO and LP then average (no model needed)")
+    er.add_argument("--runs-dir", default="runs")
+    er.add_argument("--force", action="store_true", help="Re-run even if output already exists")
+
+    el = sub.add_parser("ensemble-lr", help="Fit LR on rank-normalized saved CO+LP scores (no model needed)")
+    el.add_argument("--runs-dir", default="runs")
+    el.add_argument("--force", action="store_true", help="Re-run even if output already exists")
 
     args = parser.parse_args()
     {"fit-predict": cmd_fit_predict, "sweep": cmd_sweep,
-     "aggregate": cmd_aggregate}[args.cmd](args)
+     "aggregate": cmd_aggregate,
+     "ensemble-avg": cmd_ensemble_avg,
+     "ensemble-rank": cmd_ensemble_rank,
+     "ensemble-lr": cmd_ensemble_lr}[args.cmd](args)
 
 
 if __name__ == "__main__":

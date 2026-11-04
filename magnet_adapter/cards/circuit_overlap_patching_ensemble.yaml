@@ -1,0 +1,151 @@
+# KWDagger recipe card; run with `magnet evaluate_new` AFTER
+# circuit_overlap_patching.yaml (this card only reads that card's per-item
+# scores.csv files; it needs no GPU):
+#
+#   cd /raid/lingo/jda/code/darpa3
+#   PYTHONPATH=. magnet evaluate_new magnet_adapter/cards/circuit_overlap_patching_ensemble.yaml \
+#       --output_path=./evaluation_runs_kwdagger --backend=serial
+#
+# KWDagger caches nodes by algo_params, so after re-running the patching card
+# delete this card's node directories to recombine.
+
+name: circuit_overlap_patching_ensemble
+title: "CircuitOverlap (attribution patching) + TokenProb — equal-weight rank ensemble"
+description: |
+  Combining circuit overlap (attribution patching, as in
+  circuit_overlap_patching.yaml) with the token prob baseline should predict
+  per-instance accuracy better than token prob alone.
+
+  combined = w · rank(circuit overlap) + (1 − w) · rank(token prob), with
+  within-test-set rank percentiles; items circuit overlap could not score take
+  the token prob percentile alone, and so do items scored with a fallback
+  (random length-matched) contrast: only items with their own
+  counterfactual contribute circuit overlap.  w is fixed at 0.5: nothing is
+  fitted and no labels are used.  (Tuning w on the other domain, EWOK for
+  arithmetic and vice versa, was tried and was no better on average;
+  `weight: 'tuned'` reproduces it.)
+
+version: 1.0
+
+organizations:
+  - MIT
+
+submitter:
+  name: MIT TA2 Team
+  email: jda@mit.edu
+
+tags:
+  - qwen
+  - predictor
+  - circuit_overlap
+  - attribution_patching
+  - ensemble
+  - arithmetic
+  - ewok
+  - instance_prediction
+
+links:
+  - title: "darpa3 (predictor source)"
+    url: "https://github.com/mit-ll/darpa3"
+    type: "software"
+  - title: "arithmetic_fixed, arithmetic_parametric and world_modeling datasets"
+    url: "https://github.com/mit-ll/aiq-mit-ta2"
+    type: "dataset"
+  - title: "EWOK-CORE 1.0"
+    url: "https://huggingface.co/datasets/ewok-core/ewok-core-1.0"
+    type: "dataset"
+
+claim:
+  python: |
+    r = run_ensemble
+    assert r.combined_gain > 0, (
+        f"CircuitOverlap + TokenProb (w={r.weight:.2f}) AUC for {r.model} on "
+        f"{r.split_config} ({r.combined_auc:.3f}) does not beat TokenProb "
+        f"({r.token_prob_auc:.3f})"
+    )
+
+evidence:
+  scope: requested
+
+symbols:
+  metrics.run_ensemble.combined_auc:
+    metadata:
+      kind: metric
+      display: true
+      display_name: "CircuitOverlap + TokenProb AUC"
+      define_metric:
+        objective: maximize
+        aggregation_strategy:
+          type: mean
+
+  metrics.run_ensemble.token_prob_auc:
+    metadata:
+      kind: metric
+      display: true
+      display_name: "TokenProb AUC (baseline)"
+      define_metric:
+        objective: maximize
+        aggregation_strategy:
+          type: mean
+
+  metrics.run_ensemble.combined_gain:
+    metadata:
+      kind: metric
+      display: true
+      display_name: "AUC gain over baseline"
+      define_metric:
+        objective: maximize
+        aggregation_strategy:
+          type: mean
+
+  metrics.run_ensemble.weight:
+    metadata:
+      kind: metric
+      display: true
+      display_name: "CircuitOverlap weight"
+
+  metrics.run_ensemble.model:
+    metadata:
+      kind: model
+      display: true
+      display_name: "Model"
+
+  metrics.run_ensemble.split_config:
+    metadata:
+      kind: dataset
+      display: true
+      display_name: "Split"
+
+kwdagger:
+  result_node: run_ensemble
+
+  pipeline:
+    nodes:
+      run_ensemble:
+        executable: '/raid/lingo/jda/anaconda3/envs/darpa3-helm/bin/python -u magnet_adapter/run_ensemble_card.py'
+        algo_params:
+          scores_root: './evaluation_runs_kwdagger'
+          split_config: null
+          model: null
+          k_source: 'completion'
+          # Selects patching-card runs made with the redrawn fallback.
+          fallback_max_draws: 20
+          # Only items with their own counterfactual contribute circuit
+          # overlap; fallback-contrast items take the token prob rank.
+          combine_contrasts: 'own'
+          # Fixed equal weight; 'tuned' picks w on the other domain's splits.
+          weight: '0.5'
+        out_paths:
+          results_fpath: 'results.json'
+        primary_out_key: results_fpath
+        load_result: 'magnet_adapter.run_predictor_card.load_kwdagger_result'
+
+  matrix:
+    run_ensemble.model:
+      - huggingface/Qwen3-4B
+    run_ensemble.split_config:
+      - cross_lingual
+      - arithmetic_by_format
+      - arithmetic_by_skill
+      - ewok_physical_to_social
+      - ewok_social_to_physical

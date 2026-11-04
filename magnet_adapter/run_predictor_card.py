@@ -1,25 +1,31 @@
 #!/usr/bin/env python3
-"""Runner for the CircuitOverlap predictor evaluation card.
+"""KWDagger node for the CircuitOverlap predictor evaluation card.
 
-Loads HELM benchmark outputs, runs CircuitOverlapInstancePredictor for each
-model matching the run_spec_pattern, computes AUC of per-instance predictions
-against ground truth, and writes a results JSON file.
+Loads one (model, split) pair of HELM runs, runs
+CircuitOverlapInstancePredictor (train run → reference circuit, eval run →
+per-instance scores), computes AUC of the scores against ground-truth
+exact_match, and writes a flat results JSON.
 
-The "result" wrapper is required by MAGNET's GenericPipelineProcessor, which
-lifts each key inside "result" as a card symbol accessible in the claim block.
+For ``--split_config X`` the eval run is ``...:split_config=X,model=...`` and
+the train run is ``...:split_config=X_train,model=...`` (X's train items,
+relabelled as test so HELM generates labelled completions for them).
 
-Output format:
-    {
-        "result": {
-            "auc_by_model":  {"Qwen3-4B": 0.687},
-            "summary":       {"n_models": 1, "mean_auc": 0.687, "min_auc": 0.687}
-        }
-    }
+Besides circuit overlap (``auc``), it reports the token prob baseline
+(``token_prob_auc``) and the rank-average of the two (``combined_auc``), all
+from one model load, so one KWDagger node serves both the "nontrivial AUC" and
+the "improves the baseline" cards.
+
+Output format (read into KWDagger's ``metrics.run_circuit_overlap.*``
+namespace by :func:`load_kwdagger_result`):
+    {"model": "huggingface/Qwen3-4B", "split_config": "cross_lingual",
+     "auc": 0.709, "token_prob_auc": 0.60, "combined_auc": 0.69,
+     "combined_gain": 0.09, "n_test": 1016, "test_accuracy": 0.10}
 
 Usage:
     python -u magnet_adapter/run_predictor_card.py \\
-        --helm_runs_path ./benchmark_output \\
-        --run_spec_pattern 'arithmetic_fixed*model=Qwen*' \\
+        --helm_suite_path ./benchmark_output/runs/suite_2 \\
+        --split_config cross_lingual \\
+        --model huggingface/Qwen3-4B \\
         --models_root /raid/lingo/models \\
         --results_fpath results.json
 """
@@ -27,6 +33,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -45,99 +52,182 @@ def _compute_auc(predicted_mean, actual_mean) -> float:
     return float(roc_auc_score(y_true, y_score))
 
 
+def _auc_or_none(merged, mask):
+    import numpy as np
+    sub = merged.loc[mask]
+    auc = _compute_auc(sub["circuit_overlap"].tolist(), sub["actual_mean"].tolist()) if len(sub) else float("nan")
+    return None if np.isnan(auc) else auc
+
+
+def load_kwdagger_result(node, node_dpath):
+    """Load the flat results JSON into KWDagger's result namespace."""
+    from kwdagger.utils import util_dotdict
+
+    output_fpath = Path(node_dpath) / node.out_paths[node.primary_out_key]
+    metrics = json.loads(output_fpath.read_text())
+    flat = util_dotdict.DotDict.from_nested({"metrics": metrics})
+    return flat.insert_prefix(node.name, index=1)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--helm_runs_path",   required=True,
-                        help="Path to HELM benchmark_output directory")
-    parser.add_argument("--run_spec_pattern", default="arithmetic_fixed*",
-                        help="Glob pattern for run directories (default: arithmetic_fixed*)")
-    parser.add_argument("--models_root",      default="",
+    parser.add_argument("--helm_suite_path",   required=True,
+                        help="HELM suite directory, e.g. benchmark_output/runs/suite_2")
+    parser.add_argument("--split_config",      required=True,
+                        help="Split to evaluate; needs <split> and <split>_train runs")
+    parser.add_argument("--model",             required=True,
+                        help="HELM model id to evaluate (run_spec.adapter_spec.model)")
+    parser.add_argument("--models_root",       default="",
                         help="Local root for model weights (default: load from HF Hub)")
-    parser.add_argument("--k_fraction",       type=float, default=0.01,
+    parser.add_argument("--k_fraction",        type=float, default=0.01,
                         help="Top-K fraction for circuit overlap (default: 0.01)")
-    parser.add_argument("--batch_size",       type=int,   default=4,
+    parser.add_argument("--batch_size",        type=int,   default=4,
                         help="Items per attribution forward pass (default: 4)")
-    parser.add_argument("--results_fpath",    required=True,
+    parser.add_argument("--answer",            choices=("completion", "gold"), default="completion",
+                        help="Answer both predictors score: the model's completion "
+                             "or the gold reference (default: completion)")
+    parser.add_argument("--method",            choices=("gradient", "patching"), default="gradient",
+                        help="Circuit overlap attribution: grad x activation, or "
+                             "counterfactual attribution patching as in "
+                             "arithmetic-inconsistencies (default: gradient)")
+    parser.add_argument("--counterfactuals_dpath", default="",
+                        help="patching only: directory of make_counterfactuals.py output; "
+                             "uses <scenario>.jsonl, e.g. arithmetic_fixed.jsonl")
+    parser.add_argument("--reference_id_regex", default="",
+                        help="patching only: build the reference circuit from train "
+                             "items whose instance id matches (default: all)")
+    parser.add_argument("--position",          choices=("last", "last_unaligned", "first_diff"),
+                        default="last",
+                        help="patching only: read attribution at the last prompt token "
+                             "(last: prompts must match in length, as in the reference; "
+                             "last_unaligned: no length check) or at the first token "
+                             "where the two prompts differ (default: last)")
+    parser.add_argument("--k_source",          choices=("completion", "gold"), default="completion",
+                        help="patching only: answer tokens to decode and score, from the "
+                             "model's own completion of x (default) or, as in the "
+                             "reference, from the gold answers (leaks label information)")
+    parser.add_argument("--fallback_contrast", default="false", choices=("true", "false"),
+                        help="patching only: give items with no usable counterfactual a "
+                             "random length-matched prompt from the same split (default: false)")
+    parser.add_argument("--fallback_max_draws", type=int, default=20,
+                        help="patching only: random length-matched prompts tried per item "
+                             "until the model's answer differs (default: 20)")
+    parser.add_argument("--dtype",             choices=("bfloat16", "float16", "float32"),
+                        default="bfloat16", help="Model weight dtype (default: bfloat16)")
+    parser.add_argument("--results_fpath",     required=True,
                         help="Output JSON path")
     args = parser.parse_args()
 
-    import ubelt as ub
-    from magnet.backends.helm.helm_outputs import HelmOutputs, HelmRuns
+    import numpy as np
+    from magnet.backends.helm.helm_outputs import HelmRuns
     from magnet_adapter.circuit_overlap_predictor import CircuitOverlapInstancePredictor
 
-    # ── Collect matching runs ─────────────────────────────────────────────────
-    helm_data = HelmOutputs(ub.Path(args.helm_runs_path))
-    all_paths = []
-    for suite in helm_data.suites():
-        all_paths.extend(suite.runs(args.run_spec_pattern).paths)
-
-    if not all_paths:
-        print(f"ERROR: no runs found matching {args.run_spec_pattern!r} "
-              f"under {args.helm_runs_path}", file=sys.stderr)
-        sys.exit(1)
-
-    print(f"Found {len(all_paths)} run(s) matching {args.run_spec_pattern!r}", flush=True)
-
-    # ── Group run paths by model ──────────────────────────────────────────────
-    all_runs = HelmRuns(all_paths)
-    run_spec_df = all_runs.run_spec()
+    # ── Collect this (model, split)'s eval and train runs ─────────────────────
+    split = re.escape(args.split_config)
+    run_name_re = re.compile(rf":split_config={split}(_train)?,")
+    eval_run_selector = rf":split_config={split},"
+    candidate_paths = sorted(p for p in Path(args.helm_suite_path).iterdir()
+                             if p.is_dir() and run_name_re.search(p.name))
+    run_spec_df = HelmRuns(candidate_paths).run_spec() if candidate_paths else None
     model_col = "run_spec.adapter_spec.model"
-    if model_col not in run_spec_df.columns:
-        print("ERROR: could not find 'run_spec.adapter_spec.model' column", file=sys.stderr)
+    model_run_names = set() if run_spec_df is None else set(
+        run_spec_df.loc[run_spec_df[model_col] == args.model, "run_spec.name"]
+    )
+    model_paths = [p for p in candidate_paths if p.name in model_run_names]
+    if len(model_paths) != 2:
+        print(f"ERROR: expected an eval run and a _train run for "
+              f"{args.model!r} / {args.split_config!r} under {args.helm_suite_path}; "
+              f"found {[p.name for p in model_paths]}", file=sys.stderr)
         sys.exit(1)
 
-    models = run_spec_df[model_col].unique()
-    print(f"Models: {list(models)}", flush=True)
+    print(f"[{args.model} / {args.split_config}] evaluating on:", flush=True)
+    for p in model_paths:
+        print(f"  {p.name}", flush=True)
 
-    # ── Evaluate predictor for each model ─────────────────────────────────────
-    auc_by_model: dict[str, float] = {}
+    counterfactuals_fpath = ""
+    if args.method == "patching":
+        scenario = model_paths[0].name.split(":", 1)[0]
+        counterfactuals_fpath = str(Path(args.counterfactuals_dpath) / f"{scenario}.jsonl")
 
-    for model_id in sorted(models):
-        model_run_names = set(
-            run_spec_df.loc[run_spec_df[model_col] == model_id, "run_spec.name"]
-        )
-        model_paths = [
-            p for p in all_paths
-            if p.name in model_run_names
-        ]
-        if not model_paths:
-            print(f"[{model_id}] no run paths found, skipping", flush=True)
-            continue
+    # ── Run predictor ─────────────────────────────────────────────────────────
+    predictor = CircuitOverlapInstancePredictor(
+        models_root=args.models_root,
+        k_fraction=args.k_fraction,
+        batch_size=args.batch_size,
+        answer=args.answer,
+        method=args.method,
+        counterfactuals_fpath=counterfactuals_fpath,
+        reference_id_regex=args.reference_id_regex,
+        position=args.position,
+        k_source=args.k_source,
+        fallback_contrast=args.fallback_contrast == "true",
+        fallback_max_draws=args.fallback_max_draws,
+        dtype=args.dtype,
+        eval_run_selector=eval_run_selector,
+    )
+    comparison_df = predictor(helm_runs=HelmRuns(model_paths))
 
-        model_runs = HelmRuns(model_paths)
-        print(f"\n[{model_id}] evaluating on {len(model_paths)} run(s) …", flush=True)
-
-        predictor = CircuitOverlapInstancePredictor(
-            models_root=args.models_root,
-            k_fraction=args.k_fraction,
-            batch_size=args.batch_size,
-        )
-        comparison_df = predictor(helm_runs=model_runs)
-
-        auc = _compute_auc(
-            comparison_df["predicted_mean"].tolist(),
-            comparison_df["actual_mean"].tolist(),
-        )
-        model_key = Path(model_id).name
-        auc_by_model[model_key] = auc
-        print(f"[{model_key}] AUC = {auc:.4f}", flush=True)
+    # comparison_df holds circuit overlap scores; join the baseline and combined
+    # scores on prediction_id so all three AUCs use the same labels.
+    merged = comparison_df.merge(predictor.component_scores_, on="prediction_id",
+                                 validate="one_to_one")
+    actual = merged["actual_mean"].tolist()
+    aucs = {name: _compute_auc(merged[name].tolist(), actual)
+            for name in ("circuit_overlap", "token_prob", "combined")}
+    kept = merged["circuit_overlap_kept"].to_numpy(dtype=bool)
+    auc_kept = _compute_auc(merged.loc[kept, "circuit_overlap"].tolist(),
+                            merged.loc[kept, "actual_mean"].tolist())
+    token_prob_auc_kept = _compute_auc(merged.loc[kept, "token_prob"].tolist(),
+                                       merged.loc[kept, "actual_mean"].tolist())
+    combined_auc_kept = _compute_auc(merged.loc[kept, "combined"].tolist(),
+                                     merged.loc[kept, "actual_mean"].tolist())
+    print(f"[{args.model} / {args.split_config}] circuit_overlap AUC on the "
+          f"{int(kept.sum())} scored items = {auc_kept:.4f}", flush=True)
+    for name, value in aucs.items():
+        print(f"[{args.model} / {args.split_config}] {name} AUC = {value:.4f}", flush=True)
+    # MAGNET drops missing values from a result row and then fails to resolve
+    # the claim's symbols, so an undefined AUC (single-class labels) must not
+    # produce a results file; with none, the cell is reported as missing.
+    if any(np.isnan(value) for value in aucs.values()):
+        print(f"ERROR: AUC undefined for {args.model!r} / {args.split_config!r}: "
+              f"test accuracy is {sum(actual) / len(actual):.4f} over {len(actual)} items",
+              file=sys.stderr)
+        sys.exit(1)
 
     # ── Write results ─────────────────────────────────────────────────────────
-    aucs = [v for v in auc_by_model.values() if v == v]  # drop NaN
     results = {
-        "result": {
-            "auc_by_model": auc_by_model,
-            "summary": {
-                "n_models": len(auc_by_model),
-                "mean_auc": sum(aucs) / len(aucs) if aucs else float("nan"),
-                "min_auc":  min(aucs) if aucs else float("nan"),
-            },
-        }
+        "model": args.model,
+        "split_config": args.split_config,
+        "answer": args.answer,
+        "method": args.method,
+        "auc": aucs["circuit_overlap"],
+        # AUC over the items circuit overlap actually scored (patching filters
+        # some out; the reference reports this one).  May be NaN.
+        "auc_kept": None if np.isnan(auc_kept) else auc_kept,
+        "n_kept": int(kept.sum()),
+        "position": args.position,
+        "k_source": args.k_source,
+        "fallback_contrast": args.fallback_contrast == "true",
+        "fallback_max_draws": args.fallback_max_draws,
+        "n_fallback": int((merged["circuit_overlap_contrast"] == "fallback").sum()),
+        # Kept-item AUC split by contrast type; None where undefined.
+        "auc_own": _auc_or_none(merged, merged["circuit_overlap_contrast"] == "own"),
+        "auc_fallback": _auc_or_none(merged, merged["circuit_overlap_contrast"] == "fallback"),
+        "token_prob_auc_kept": None if np.isnan(token_prob_auc_kept) else token_prob_auc_kept,
+        "combined_auc_kept": None if np.isnan(combined_auc_kept) else combined_auc_kept,
+        "token_prob_auc": aucs["token_prob"],
+        "combined_auc": aucs["combined"],
+        "combined_gain": aucs["combined"] - aucs["token_prob"],
+        "n_test": len(merged),
+        "test_accuracy": float(sum(actual) / len(actual)),
     }
-
     out_path = Path(args.results_fpath)
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    # Per-item scores, so ensembling can be revisited without recomputing.
+    cols = ["prediction_id", "actual_mean", "circuit_overlap", "circuit_overlap_kept",
+            "circuit_overlap_contrast", "token_prob", "combined"]
+    merged[cols].to_csv(out_path.with_name("scores.csv"), index=False)
     out_path.write_text(json.dumps(results, indent=2))
     print(f"\nResults written to {out_path}", flush=True)
     print(json.dumps(results, indent=2))

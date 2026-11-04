@@ -1,0 +1,195 @@
+# KWDagger recipe card; run with `magnet evaluate_new`:
+#
+#   cd /raid/lingo/jda/code/darpa3
+#   PYTHONPATH=. magnet evaluate_new magnet_adapter/cards/circuit_overlap_patching.yaml \
+#       --output_path=./evaluation_runs_kwdagger --backend=serial
+#
+# Counterfactual files come from magnet_adapter/make_counterfactuals.py.
+# HELM runs come from magnet_adapter/helm_confs/arith_ewok.conf (suite_2).
+
+name: circuit_overlap_patching
+title: "CircuitOverlap Predictor (attribution patching) — instance-level AUC under distribution shift"
+description: |
+  Circuit overlap computed as in arithmetic-inconsistencies should achieve
+  nontrivial AUC when predicting per-instance accuracy of a base model on a
+  held-out distribution.
+
+  Attribution is counterfactual attribution patching: each item x is paired
+  with a counterfactual x' (the sign-flipped arithmetic_fixed problem; the
+  arithmetic_parametric problem with every operator swapped, + ↔ − and
+  × ↔ ÷; EWOK's minimal-pair context), the model's own greedy answers to both
+  are decoded, and each MLP unit's score is grad ⊙ (act(x) − act(x')) for the
+  normalised preference of the x answer over the x' answer.  It is read at
+  the last prompt token for cross_lingual and arithmetic_by_skill (as in the
+  reference) and, for arithmetic_by_format and EWOK, whose prompts often
+  tokenize to different lengths, at each prompt's own last token without the
+  reference's same-length requirement.  arithmetic_parametric items whose swapped problem divides by zero
+  or is non-integer have no counterfactual.
+
+  Two changes from the reference: K, the number of answer tokens decoded and
+  scored, is the token length of the model's own completion of x (the
+  reference uses the gold answers' length, which leaks label information);
+  and an item with no usable counterfactual (none exists, or the model gives
+  the same answer to x and x') is contrasted with a random other prompt of the
+  same token length from the same split, redrawn until the model's answer
+  to it differs.
+  The reference circuit S is the top 1% of units of the mean attribution over
+  train items (the symbolic-format train items for cross_lingual, as in the
+  reference); each test item's score is its attribution summed over S.
+  Items still unscored (no length-matched prompt gives a different answer) get the median score; the `*_kept` AUCs in the results cover only the scored items.
+
+  The token prob baseline scores the model's own completion.  The
+  combination averages the two predictors' rank percentiles; items circuit
+  overlap could not score take the token prob percentile alone.  Splits:
+
+  - arithmetic_fixed/cross_lingual: english+symbolic → spanish+italian
+  - arithmetic_parametric/arithmetic_by_format: symbolic+english → italian+chinese
+  - arithmetic_parametric/arithmetic_by_skill: {+,-},{+,*} → {-,*},{*},{-}
+  - world_modeling/ewok_physical_to_social: EWOK physical domains → social domains
+  - world_modeling/ewok_social_to_physical: EWOK social domains → physical domains
+
+version: 1.0
+
+organizations:
+  - MIT
+
+submitter:
+  name: MIT TA2 Team
+  email: jda@mit.edu
+
+tags:
+  - qwen
+  - predictor
+  - circuit_overlap
+  - attribution_patching
+  - arithmetic
+  - ewok
+  - instance_prediction
+
+links:
+  - title: "darpa3 (predictor source)"
+    url: "https://github.com/mit-ll/darpa3"
+    type: "software"
+  - title: "arithmetic_fixed, arithmetic_parametric and world_modeling datasets"
+    url: "https://github.com/mit-ll/aiq-mit-ta2"
+    type: "dataset"
+  - title: "EWOK-CORE 1.0"
+    url: "https://huggingface.co/datasets/ewok-core/ewok-core-1.0"
+    type: "dataset"
+
+# Thresholds are per split; all 0.6 by decision (2026-11-04).
+claim:
+  python: |
+    thresholds = {
+        "cross_lingual": 0.6,
+        "arithmetic_by_format": 0.6,
+        "arithmetic_by_skill": 0.6,
+        "ewok_physical_to_social": 0.6,
+        "ewok_social_to_physical": 0.6,
+    }
+    r = run_circuit_overlap
+    threshold = thresholds[r.split_config]
+    assert r.auc >= threshold, (
+        f"CircuitOverlap (patching) AUC for {r.model} on {r.split_config} ({r.auc:.3f}) "
+        f"is below threshold ({threshold:.2f})"
+    )
+
+evidence:
+  scope: requested
+
+symbols:
+  metrics.run_circuit_overlap.auc:
+    metadata:
+      kind: metric
+      display: true
+      display_name: "Instance-level AUC"
+      define_metric:
+        objective: maximize
+        aggregation_strategy:
+          type: mean
+
+  metrics.run_circuit_overlap.n_kept:
+    metadata:
+      kind: metric
+      display: true
+      display_name: "Items scored by patching"
+
+  metrics.run_circuit_overlap.combined_gain:
+    metadata:
+      kind: metric
+      display: true
+      display_name: "Combined AUC gain over token prob"
+
+  metrics.run_circuit_overlap.model:
+    metadata:
+      kind: model
+      display: true
+      display_name: "Model"
+
+  metrics.run_circuit_overlap.split_config:
+    metadata:
+      kind: dataset
+      display: true
+      display_name: "Split"
+
+kwdagger:
+  result_node: run_circuit_overlap
+
+  pipeline:
+    nodes:
+      run_circuit_overlap:
+        executable: '/raid/lingo/jda/anaconda3/envs/darpa3-helm/bin/python -u magnet_adapter/run_predictor_card.py'
+        algo_params:
+          helm_suite_path: './benchmark_output/runs/suite_2'
+          split_config: null
+          model: null
+          models_root: '/raid/lingo/models'
+          k_fraction: 0.01
+          batch_size: 4
+          answer: 'completion'
+          method: 'patching'
+          counterfactuals_dpath: './magnet_adapter/counterfactuals'
+          reference_id_regex: null
+          position: null
+          # K = token length of the model's own completion (the reference's
+          # gold-length K leaks label information).
+          k_source: 'completion'
+          # Items with no usable counterfactual are contrasted with a random
+          # length-matched prompt from the same split, redrawn (up to 20
+          # decodes) until the model's answer differs.
+          fallback_contrast: 'true'
+          fallback_max_draws: 20
+          # The reference loads models in float16.
+          dtype: 'float16'
+        out_paths:
+          results_fpath: 'results.json'
+        primary_out_key: results_fpath
+        load_result: 'magnet_adapter.run_predictor_card.load_kwdagger_result'
+
+  matrix:
+    run_circuit_overlap.model:
+      - huggingface/Qwen3-4B
+    run_circuit_overlap.split_config:
+      - arithmetic_by_skill
+      - cross_lingual
+      - arithmetic_by_format
+      - ewok_physical_to_social
+      - ewok_social_to_physical
+    include:
+      # Reference circuit from the symbolic train items only, read at the
+      # last prompt token, as in arithmetic-inconsistencies.
+      - run_circuit_overlap.split_config: cross_lingual
+        run_circuit_overlap.reference_id_regex: '^symbolic_'
+        run_circuit_overlap.position: last
+      - run_circuit_overlap.split_config: arithmetic_by_format
+        run_circuit_overlap.reference_id_regex: ''
+        run_circuit_overlap.position: last_unaligned
+      - run_circuit_overlap.split_config: arithmetic_by_skill
+        run_circuit_overlap.reference_id_regex: ''
+        run_circuit_overlap.position: last
+      - run_circuit_overlap.split_config: ewok_physical_to_social
+        run_circuit_overlap.reference_id_regex: ''
+        run_circuit_overlap.position: last_unaligned
+      - run_circuit_overlap.split_config: ewok_social_to_physical
+        run_circuit_overlap.reference_id_regex: ''
+        run_circuit_overlap.position: last_unaligned

@@ -1,0 +1,126 @@
+# KWDagger recipe card; run with `magnet evaluate_new`:
+#
+#   cd /raid/lingo/jda/code/darpa3
+#   PYTHONPATH=. magnet evaluate_new magnet_adapter/cards/circuit_overlap_auc.yaml \
+#       --output_path=./evaluation_runs_kwdagger --backend=serial
+#
+# PYTHONPATH=. lets KWDagger import the node's `load_result` function.
+# HELM runs come from magnet_adapter/helm_confs/arith_ewok.conf (suite_2).
+
+name: circuit_overlap_auc
+title: "CircuitOverlap Predictor — instance-level AUC under distribution shift"
+description: |
+  The circuit overlap predictor should achieve nontrivial AUC when predicting
+  per-instance accuracy of a base model on a held-out distribution.
+
+  For each split, the predictor builds its reference circuit from the model's
+  behaviour on the split's train items (HELM run <split>_train) and scores the
+  split's test items (HELM run <split>).  AUC is computed against ground-truth
+  exact-match labels.  Splits:
+
+  - arithmetic_fixed/cross_lingual: english+symbolic → spanish+italian
+  - arithmetic_parametric/arithmetic_by_format: symbolic+english → italian+chinese
+  - arithmetic_parametric/arithmetic_by_skill: {+,-},{+,*} → {-,*},{*},{-}
+  - world_modeling/ewok_physical_to_social: EWOK physical domains → social domains
+  - world_modeling/ewok_social_to_physical: EWOK social domains → physical domains
+
+version: 2.0
+
+organizations:
+  - MIT
+
+submitter:
+  name: MIT TA2 Team
+  email: jda@mit.edu
+
+tags:
+  - qwen
+  - predictor
+  - circuit_overlap
+  - arithmetic
+  - ewok
+  - instance_prediction
+
+links:
+  - title: "darpa3 (predictor source)"
+    url: "https://github.com/mit-ll/darpa3"
+    type: "software"
+  - title: "arithmetic_fixed, arithmetic_parametric and world_modeling datasets"
+    url: "https://github.com/mit-ll/aiq-mit-ta2"
+    type: "dataset"
+  - title: "EWOK-CORE 1.0"
+    url: "https://huggingface.co/datasets/ewok-core/ewok-core-1.0"
+    type: "dataset"
+
+# Thresholds are per split; placeholders until set from observed results.
+claim:
+  python: |
+    thresholds = {
+        "cross_lingual": 0.6,
+        "arithmetic_by_format": 0.6,
+        "arithmetic_by_skill": 0.6,
+        "ewok_physical_to_social": 0.6,
+        "ewok_social_to_physical": 0.6,
+    }
+    r = run_circuit_overlap
+    threshold = thresholds[r.split_config]
+    assert r.auc >= threshold, (
+        f"CircuitOverlap AUC for {r.model} on {r.split_config} ({r.auc:.3f}) "
+        f"is below threshold ({threshold:.2f})"
+    )
+
+evidence:
+  scope: requested
+
+symbols:
+  metrics.run_circuit_overlap.auc:
+    metadata:
+      kind: metric
+      display: true
+      display_name: "Instance-level AUC"
+      define_metric:
+        objective: maximize
+        aggregation_strategy:
+          type: mean
+
+  metrics.run_circuit_overlap.model:
+    metadata:
+      kind: model
+      display: true
+      display_name: "Model"
+
+  metrics.run_circuit_overlap.split_config:
+    metadata:
+      kind: dataset
+      display: true
+      display_name: "Split"
+
+kwdagger:
+  result_node: run_circuit_overlap
+
+  pipeline:
+    nodes:
+      run_circuit_overlap:
+        executable: '/raid/lingo/jda/anaconda3/envs/darpa3-helm/bin/python -u magnet_adapter/run_predictor_card.py'
+        algo_params:
+          helm_suite_path: './benchmark_output/runs/suite_2'
+          split_config: null
+          model: null
+          models_root: '/raid/lingo/models'
+          k_fraction: 0.01
+          batch_size: 4
+          answer: 'completion'
+        out_paths:
+          results_fpath: 'results.json'
+        primary_out_key: results_fpath
+        load_result: 'magnet_adapter.run_predictor_card.load_kwdagger_result'
+
+  matrix:
+    run_circuit_overlap.model:
+      - huggingface/Qwen3-4B
+    run_circuit_overlap.split_config:
+      - cross_lingual
+      - arithmetic_by_format
+      - arithmetic_by_skill
+      - ewok_physical_to_social
+      - ewok_social_to_physical
