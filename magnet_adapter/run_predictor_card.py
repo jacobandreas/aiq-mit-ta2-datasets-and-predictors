@@ -2,18 +2,21 @@
 """KWDagger node for the CircuitOverlap predictor evaluation card.
 
 Loads one (model, split) pair of HELM runs, runs
-CircuitOverlapInstancePredictor (train run → reference circuit, eval run →
-per-instance scores), computes AUC of the scores against ground-truth
-exact_match, and writes a flat results JSON.
+CircuitOverlapInstancePredictor (attribution-patching circuit overlap: train
+run → reference circuit, eval run → per-instance scores), computes AUC of the
+scores against ground-truth exact_match, and writes a flat results JSON plus
+per-item scores (scores.csv).
 
 For ``--split_config X`` the eval run is ``...:split_config=X,model=...`` and
 the train run is ``...:split_config=X_train,model=...`` (X's train items,
 relabelled as test so HELM generates labelled completions for them).
 
 Besides circuit overlap (``auc``), it reports the token prob baseline
-(``token_prob_auc``) and the rank-average of the two (``combined_auc``), all
-from one model load, so one KWDagger node serves both the "nontrivial AUC" and
-the "improves the baseline" cards.
+(``token_prob_auc``) and the equal-weight rank average of the two
+(``combined_auc``; circuit overlap enters only for items with their own
+counterfactual), all from one model load, so one KWDagger node serves both the
+"nontrivial AUC" card (circuit_overlap_patching.yaml) and the "improves the
+baseline" card (circuit_overlap_patching_ensemble.yaml).
 
 Output format (read into KWDagger's ``metrics.run_circuit_overlap.*``
 namespace by :func:`load_kwdagger_result`):
@@ -27,6 +30,7 @@ Usage:
         --split_config cross_lingual \\
         --model huggingface/Qwen3-4B \\
         --models_root /raid/lingo/models \\
+        --counterfactuals_dpath ./magnet_adapter/counterfactuals \\
         --results_fpath results.json
 """
 from __future__ import annotations
@@ -84,35 +88,21 @@ def main() -> None:
                         help="Top-K fraction for circuit overlap (default: 0.01)")
     parser.add_argument("--batch_size",        type=int,   default=4,
                         help="Items per attribution forward pass (default: 4)")
-    parser.add_argument("--answer",            choices=("completion", "gold"), default="completion",
-                        help="Answer both predictors score: the model's completion "
-                             "or the gold reference (default: completion)")
-    parser.add_argument("--method",            choices=("gradient", "patching"), default="gradient",
-                        help="Circuit overlap attribution: grad x activation, or "
-                             "counterfactual attribution patching as in "
-                             "arithmetic-inconsistencies (default: gradient)")
-    parser.add_argument("--counterfactuals_dpath", default="",
-                        help="patching only: directory of make_counterfactuals.py output; "
+    parser.add_argument("--counterfactuals_dpath", required=True,
+                        help="Directory of make_counterfactuals.py output; "
                              "uses <scenario>.jsonl, e.g. arithmetic_fixed.jsonl")
     parser.add_argument("--reference_id_regex", default="",
-                        help="patching only: build the reference circuit from train "
+                        help="Build the reference circuit from train "
                              "items whose instance id matches (default: all)")
-    parser.add_argument("--position",          choices=("last", "last_unaligned", "first_diff"),
+    parser.add_argument("--position",          choices=("last", "last_unaligned"),
                         default="last",
-                        help="patching only: read attribution at the last prompt token "
-                             "(last: prompts must match in length, as in the reference; "
-                             "last_unaligned: no length check) or at the first token "
-                             "where the two prompts differ (default: last)")
-    parser.add_argument("--k_source",          choices=("completion", "gold"), default="completion",
-                        help="patching only: answer tokens to decode and score, from the "
-                             "model's own completion of x (default) or, as in the "
-                             "reference, from the gold answers (leaks label information)")
-    parser.add_argument("--fallback_contrast", default="false", choices=("true", "false"),
-                        help="patching only: give items with no usable counterfactual a "
-                             "random length-matched prompt from the same split (default: false)")
+                        help="Read attribution at each prompt's last token, requiring "
+                             "the two prompts to match in token length (last, as in the "
+                             "reference) or not (last_unaligned) (default: last)")
     parser.add_argument("--fallback_max_draws", type=int, default=20,
-                        help="patching only: random length-matched prompts tried per item "
-                             "until the model's answer differs (default: 20)")
+                        help="Random length-matched prompts tried per item without a "
+                             "usable counterfactual, until the model's answer differs "
+                             "(default: 20)")
     parser.add_argument("--dtype",             choices=("bfloat16", "float16", "float32"),
                         default="bfloat16", help="Model weight dtype (default: bfloat16)")
     parser.add_argument("--results_fpath",     required=True,
@@ -145,23 +135,17 @@ def main() -> None:
     for p in model_paths:
         print(f"  {p.name}", flush=True)
 
-    counterfactuals_fpath = ""
-    if args.method == "patching":
-        scenario = model_paths[0].name.split(":", 1)[0]
-        counterfactuals_fpath = str(Path(args.counterfactuals_dpath) / f"{scenario}.jsonl")
+    scenario = model_paths[0].name.split(":", 1)[0]
+    counterfactuals_fpath = str(Path(args.counterfactuals_dpath) / f"{scenario}.jsonl")
 
     # ── Run predictor ─────────────────────────────────────────────────────────
     predictor = CircuitOverlapInstancePredictor(
+        counterfactuals_fpath=counterfactuals_fpath,
         models_root=args.models_root,
         k_fraction=args.k_fraction,
         batch_size=args.batch_size,
-        answer=args.answer,
-        method=args.method,
-        counterfactuals_fpath=counterfactuals_fpath,
         reference_id_regex=args.reference_id_regex,
         position=args.position,
-        k_source=args.k_source,
-        fallback_contrast=args.fallback_contrast == "true",
         fallback_max_draws=args.fallback_max_draws,
         dtype=args.dtype,
         eval_run_selector=eval_run_selector,
@@ -199,16 +183,11 @@ def main() -> None:
     results = {
         "model": args.model,
         "split_config": args.split_config,
-        "answer": args.answer,
-        "method": args.method,
         "auc": aucs["circuit_overlap"],
-        # AUC over the items circuit overlap actually scored (patching filters
-        # some out; the reference reports this one).  May be NaN.
+        # AUC over the items circuit overlap actually scored.  May be NaN.
         "auc_kept": None if np.isnan(auc_kept) else auc_kept,
         "n_kept": int(kept.sum()),
         "position": args.position,
-        "k_source": args.k_source,
-        "fallback_contrast": args.fallback_contrast == "true",
         "fallback_max_draws": args.fallback_max_draws,
         "n_fallback": int((merged["circuit_overlap_contrast"] == "fallback").sum()),
         # Kept-item AUC split by contrast type; None where undefined.

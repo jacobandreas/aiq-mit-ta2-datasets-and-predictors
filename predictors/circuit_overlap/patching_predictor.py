@@ -6,10 +6,10 @@ fit(train_items):  run counterfactual attribution patching on the train items
     from all kept items of the numeric format, without looking at labels).
 predict(test_items):  run attribution patching on the test items and score
     each kept item by its loading on S, ``sum_on_S`` (the signed sum of its
-    attribution at the units in S).  Items removed by the alignment and
-    distinguishability filters have no attribution and get NaN.
+    attribution at the units in S).  Items left without any contrast (see
+    the fallback in patching.py) have no attribution and get NaN.
 
-Items are dicts with ``x``, ``x_prime``, ``y``, ``y_prime`` (see
+Items are dicts with ``x``, ``x_prime`` and ``k`` (see
 predictors/circuit_overlap/patching.py).
 """
 from __future__ import annotations
@@ -25,11 +25,9 @@ from predictors.circuit_overlap.patching import run_patching
 class PatchingCircuitOverlapPredictor:
 
     def __init__(self, k_fraction: float = 0.01, batch_size: int = 4, device: str = "cuda",
-                 position: str = "last", fallback_contrast: bool = False,
-                 fallback_max_draws: int = 20):
+                 position: str = "last", fallback_max_draws: int = 20):
         self.k_fraction = k_fraction
         self.position = position
-        self.fallback_contrast = fallback_contrast
         self.fallback_max_draws = fallback_max_draws
         self.batch_size = batch_size
         self.device = device
@@ -52,7 +50,6 @@ class PatchingCircuitOverlapPredictor:
         self.fit_info_ = run_patching(model, tokenizer, train_items, consume,
                                       batch_size=self.batch_size, device=self.device,
                                       position=self.position,
-                                      fallback_contrast=self.fallback_contrast,
                                       fallback_max_draws=self.fallback_max_draws)
         if total["n"] == 0:
             raise ValueError("no train items survived the patching filters; cannot build S")
@@ -73,6 +70,5 @@ class PatchingCircuitOverlapPredictor:
         self.predict_info_ = run_patching(model, tokenizer, test_items, consume,
                                           batch_size=self.batch_size, device=self.device,
                                           position=self.position,
-                                          fallback_contrast=self.fallback_contrast,
                                           fallback_max_draws=self.fallback_max_draws)
         return scores

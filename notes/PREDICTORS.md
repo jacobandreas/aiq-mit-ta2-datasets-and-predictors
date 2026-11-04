@@ -89,9 +89,37 @@ chance once its tokenization bug was fixed (the answer was missing its leading
 space, so `"Answer:" + "A"` became one `:A` token). Code is in
 `predictors/circuit_overlap/patching.py`, a port of
 `arithmetic-inconsistencies/attribution/src/{generate,attribution}.py`, and
-`predictors/circuit_overlap/patching_predictor.py`. In the MAGNET adapter
-it's selected with `method="patching"`; the card is
-`magnet_adapter/cards/circuit_overlap_patching.yaml`.
+`predictors/circuit_overlap/patching_predictor.py`.
+
+**Final configuration (after the 2026-11-04 cleanup).** The MAGNET path
+(`magnet_adapter/`) now implements only this:
+
+- Attribution patching at each prompt's last token. Use `position: last`
+  (the reference, with the same-length filter) for cross_lingual and
+  by_skill, and `last_unaligned` for by_format and EWOK.
+- K is the token length of the model's own completion.
+- Items without a usable counterfactual get a random length-matched
+  fallback contrast, redrawn up to `fallback_max_draws` (20) times.
+- Token prob scores the model's own completion. No gold answer is used.
+- The combination is an equal-weight rank average, and only
+  own-counterfactual items contribute circuit overlap.
+- One node, `run_predictor_card.py`, serves both cards:
+  `circuit_overlap_patching.yaml` (claim: CO AUC ≥ 0.6) and
+  `circuit_overlap_patching_ensemble.yaml` (claim: combined beats TP).
+- Counterfactual files hold only `id`/`x`/`x_prime`.
+
+The cleanup removed these options, which the log below still mentions:
+
+- the gradient method in the adapter, with the `circuit_overlap_auc` and
+  `circuit_overlap_ensemble` cards
+- `answer: gold`, `k_source: gold`, and `position: first_diff`
+- `fallback_contrast` (the fallback is always on)
+- the EWOK A/B-swap counterfactuals
+- `run_ensemble_card.py`, with its `combine_contrasts` and `weight`
+  options, including cross-domain tuning
+
+The standalone pipeline (`predictors/run.py`, gradient
+`CircuitOverlapPredictor`) is unchanged.
 
 - **Counterfactuals.** These come from `magnet_adapter/make_counterfactuals.py`
   and are keyed by HELM instance id.

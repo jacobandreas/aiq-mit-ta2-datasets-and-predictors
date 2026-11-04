@@ -1,29 +1,32 @@
-# KWDagger recipe card; run with `magnet evaluate_new` AFTER
-# circuit_overlap_patching.yaml (this card only reads that card's per-item
-# scores.csv files; it needs no GPU):
+# KWDagger recipe card; run with `magnet evaluate_new`:
 #
 #   cd /raid/lingo/jda/code/darpa3
 #   PYTHONPATH=. magnet evaluate_new magnet_adapter/cards/circuit_overlap_patching_ensemble.yaml \
 #       --output_path=./evaluation_runs_kwdagger --backend=serial
 #
-# KWDagger caches nodes by algo_params, so after re-running the patching card
-# delete this card's node directories to recombine.
+# The run_circuit_overlap node is identical to the one in
+# circuit_overlap_patching.yaml, so KWDagger reuses that card's results (and
+# running either card computes both).  Keep the two in sync.
 
 name: circuit_overlap_patching_ensemble
-title: "CircuitOverlap (attribution patching) + TokenProb — equal-weight rank ensemble"
+title: "CircuitOverlap (attribution patching) + TokenProb — improvement over the token prob baseline"
 description: |
-  Combining circuit overlap (attribution patching, as in
+  Combining circuit overlap (attribution patching, see
   circuit_overlap_patching.yaml) with the token prob baseline should predict
   per-instance accuracy better than token prob alone.
 
-  combined = w · rank(circuit overlap) + (1 − w) · rank(token prob), with
-  within-test-set rank percentiles; items circuit overlap could not score take
-  the token prob percentile alone, and so do items scored with a fallback
-  (random length-matched) contrast: only items with their own
-  counterfactual contribute circuit overlap.  w is fixed at 0.5: nothing is
-  fitted and no labels are used.  (Tuning w on the other domain, EWOK for
-  arithmetic and vice versa, was tried and was no better on average;
-  `weight: 'tuned'` reproduces it.)
+  combined = mean of the two predictors' within-test-set rank percentiles
+  (equal weight; nothing is fitted and no labels are used).  Only items
+  scored with their own counterfactual contribute circuit overlap; items
+  scored with a fallback (random length-matched) contrast, or not scored,
+  take the token prob percentile alone.  Both predictors score the model's
+  own completion.  Splits:
+
+  - arithmetic_fixed/cross_lingual: english+symbolic → spanish+italian
+  - arithmetic_parametric/arithmetic_by_format: symbolic+english → italian+chinese
+  - arithmetic_parametric/arithmetic_by_skill: {+,-},{+,*} → {-,*},{*},{-}
+  - world_modeling/ewok_physical_to_social: EWOK physical domains → social domains
+  - world_modeling/ewok_social_to_physical: EWOK social domains → physical domains
 
 version: 1.0
 
@@ -55,20 +58,20 @@ links:
     url: "https://huggingface.co/datasets/ewok-core/ewok-core-1.0"
     type: "dataset"
 
+
 claim:
   python: |
-    r = run_ensemble
+    r = run_circuit_overlap
     assert r.combined_gain > 0, (
-        f"CircuitOverlap + TokenProb (w={r.weight:.2f}) AUC for {r.model} on "
-        f"{r.split_config} ({r.combined_auc:.3f}) does not beat TokenProb "
-        f"({r.token_prob_auc:.3f})"
+        f"CircuitOverlap + TokenProb AUC for {r.model} on {r.split_config} "
+        f"({r.combined_auc:.3f}) does not beat TokenProb ({r.token_prob_auc:.3f})"
     )
 
 evidence:
   scope: requested
 
 symbols:
-  metrics.run_ensemble.combined_auc:
+  metrics.run_circuit_overlap.combined_auc:
     metadata:
       kind: metric
       display: true
@@ -78,7 +81,7 @@ symbols:
         aggregation_strategy:
           type: mean
 
-  metrics.run_ensemble.token_prob_auc:
+  metrics.run_circuit_overlap.token_prob_auc:
     metadata:
       kind: metric
       display: true
@@ -88,7 +91,7 @@ symbols:
         aggregation_strategy:
           type: mean
 
-  metrics.run_ensemble.combined_gain:
+  metrics.run_circuit_overlap.combined_gain:
     metadata:
       kind: metric
       display: true
@@ -98,54 +101,70 @@ symbols:
         aggregation_strategy:
           type: mean
 
-  metrics.run_ensemble.weight:
-    metadata:
-      kind: metric
-      display: true
-      display_name: "CircuitOverlap weight"
-
-  metrics.run_ensemble.model:
+  metrics.run_circuit_overlap.model:
     metadata:
       kind: model
       display: true
       display_name: "Model"
 
-  metrics.run_ensemble.split_config:
+  metrics.run_circuit_overlap.split_config:
     metadata:
       kind: dataset
       display: true
       display_name: "Split"
 
 kwdagger:
-  result_node: run_ensemble
+  result_node: run_circuit_overlap
 
   pipeline:
     nodes:
-      run_ensemble:
-        executable: '/raid/lingo/jda/anaconda3/envs/darpa3-helm/bin/python -u magnet_adapter/run_ensemble_card.py'
+      run_circuit_overlap:
+        executable: '/raid/lingo/jda/anaconda3/envs/darpa3-helm/bin/python -u magnet_adapter/run_predictor_card.py'
         algo_params:
-          scores_root: './evaluation_runs_kwdagger'
+          helm_suite_path: './benchmark_output/runs/suite_2'
           split_config: null
           model: null
-          k_source: 'completion'
-          # Selects patching-card runs made with the redrawn fallback.
+          models_root: '/raid/lingo/models'
+          k_fraction: 0.01
+          batch_size: 4
+          counterfactuals_dpath: './magnet_adapter/counterfactuals'
+          reference_id_regex: null
+          position: null
+          # Items with no usable counterfactual are contrasted with a random
+          # length-matched prompt from the same split, redrawn (up to 20
+          # decodes) until the model's answer differs.
           fallback_max_draws: 20
-          # Only items with their own counterfactual contribute circuit
-          # overlap; fallback-contrast items take the token prob rank.
-          combine_contrasts: 'own'
-          # Fixed equal weight; 'tuned' picks w on the other domain's splits.
-          weight: '0.5'
+          # The reference loads models in float16.
+          dtype: 'float16'
         out_paths:
           results_fpath: 'results.json'
         primary_out_key: results_fpath
         load_result: 'magnet_adapter.run_predictor_card.load_kwdagger_result'
 
   matrix:
-    run_ensemble.model:
+    run_circuit_overlap.model:
       - huggingface/Qwen3-4B
-    run_ensemble.split_config:
+    run_circuit_overlap.split_config:
+      - arithmetic_by_skill
       - cross_lingual
       - arithmetic_by_format
-      - arithmetic_by_skill
       - ewok_physical_to_social
       - ewok_social_to_physical
+    include:
+      # Reference circuit from the symbolic train items only, read at the
+      # last prompt token, as in arithmetic-inconsistencies.
+      - run_circuit_overlap.split_config: cross_lingual
+        run_circuit_overlap.reference_id_regex: '^symbolic_'
+        run_circuit_overlap.position: last
+      - run_circuit_overlap.split_config: arithmetic_by_format
+        run_circuit_overlap.reference_id_regex: ''
+        run_circuit_overlap.position: last_unaligned
+      - run_circuit_overlap.split_config: arithmetic_by_skill
+        run_circuit_overlap.reference_id_regex: ''
+        run_circuit_overlap.position: last
+      - run_circuit_overlap.split_config: ewok_physical_to_social
+        run_circuit_overlap.reference_id_regex: ''
+        run_circuit_overlap.position: last_unaligned
+      - run_circuit_overlap.split_config: ewok_social_to_physical
+        run_circuit_overlap.reference_id_regex: ''
+        run_circuit_overlap.position: last_unaligned

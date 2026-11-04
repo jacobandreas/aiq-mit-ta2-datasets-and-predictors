@@ -1,10 +1,10 @@
 """Counterfactual attribution patching, ported from arithmetic-inconsistencies.
 
 This follows arithmetic-inconsistencies/attribution (src/generate.py,
-src/attribution.py, scripts/run_attribution.py) as closely as possible:
+src/attribution.py, scripts/run_attribution.py):
 
-1. Responses: greedily decode exactly K_i = max(len(tok(y)), len(tok(y')))
-   tokens from the clean prompt x and from the counterfactual prompt x'.
+1. Responses: greedily decode exactly K_i tokens from the clean prompt x and
+   from the counterfactual prompt x'.
 2. Filters: keep items whose x and x' tokenize to the same length and whose
    two greedy responses differ.
 3. Baselines: mean over kept items of log P(r | p) − log P(r' | p), with p the
@@ -15,36 +15,31 @@ src/attribution.py, scripts/run_attribution.py) as closely as possible:
    teacher-forcing difference), then, per item, at the last prompt token of
    every MLP down_proj input:  attr_i = grad_i ⊙ (clean_act_i − corrupted_act_i).
 
-Items are dicts with ``x``, ``x_prime``, ``y`` and ``y_prime``, and
-optionally ``k``.
+Items are dicts with ``x``, ``x_prime`` (None if there is no counterfactual)
+and ``k``.
 
-Two deliberate changes from the reference, both opt-in per item:
+Deliberate changes from the reference:
 
-- ``k`` fixes K_i directly.  The reference sets it from the gold answers'
-  token lengths, which leaks label information (a correct answer always fits
-  K exactly); callers pass the token length of the model's own completion
-  instead.
-- ``x_prime=None`` (no counterfactual), or a counterfactual that leaves the
-  two greedy responses identical, falls back to a *random length-matched
-  contrast* when ``fallback_contrast`` is set: x' becomes the prompt of
-  another item in the same call with the same token length (a different
-  text), drawn with a fixed seed and redrawn until the model's response to
-  it differs from its response to x (at most ``fallback_max_draws`` decodes).  ``info["contrast"]`` records, per item,
-  ``"own"``, ``"fallback"`` or ``None`` (unscored).
-
-``position`` selects where attribution is read.  ``"last"`` (the reference)
-reads the last prompt token of each prompt and requires the two prompts to
-tokenize to the same length.  ``"last_unaligned"`` reads the same positions
-but skips that requirement: each prompt is read at its own last token, which
-is well defined whenever both prompts end the same way (EWOK's "Answer:").  ``"first_diff"`` reads the first token at which
-the two prompts differ (the same index in both); it needs no length match, so
-the alignment filter is skipped.  It suits minimal pairs such as EWOK's, whose
-contexts differ by a word or two and often tokenize to different lengths.
-
-One deliberate difference: the reference backpropagates the *batch mean* of
-the metric, so the items in a short final batch get a larger gradient scale.
-Here the batch sum is divided by the nominal batch size, so every item gets
-the same scale.
+- K_i is given per item (``k``).  The reference sets it from the gold
+  answers' token lengths, which leaks label information (a correct answer
+  always fits K exactly); callers pass the token length of the model's own
+  completion instead.
+- An item with no usable counterfactual (``x_prime=None``, or a
+  counterfactual that leaves the two greedy responses identical) gets a
+  *random length-matched contrast*: x' becomes the prompt of another item in
+  the same call with the same token length (a different text), drawn in a
+  fixed random order and redrawn until the model's response to it differs
+  from its response to x (at most ``fallback_max_draws`` decodes).
+  ``info["contrast"]`` records, per item, ``"own"``, ``"fallback"`` or
+  ``None`` (unscored).
+- ``position="last_unaligned"`` reads the same position as the reference
+  (each prompt's last token) but skips the same-length filter.  That is well
+  defined whenever both prompts end the same way (EWOK's "Answer:") and
+  suits prompt pairs that often tokenize to different lengths.
+  ``position="last"`` is the reference.
+- The reference backpropagates the *batch mean* of the metric, so the items
+  in a short final batch get a larger gradient scale.  Here the batch sum is
+  divided by the nominal batch size, so every item gets the same scale.
 """
 from __future__ import annotations
 
@@ -59,12 +54,6 @@ from predictors.circuit_overlap.attribution import build_model_config, _hook_tar
 
 
 # ── Stage 1: fixed-K greedy responses ────────────────────────────────────────
-
-def k_for_item(tokenizer, y: str, y_prime: str) -> int:
-    k_y = len(tokenizer(str(y), add_special_tokens=False)["input_ids"])
-    k_yp = len(tokenizer(str(y_prime), add_special_tokens=False)["input_ids"])
-    return max(k_y, k_yp)
-
 
 def greedy_decode_fixed_k(model, tokenizer, prompts: List[str], ks: List[int],
                           batch_size: int = 32, device: str = "cuda") -> List[str]:
@@ -181,7 +170,6 @@ def run_patching(
     decode_batch_size: int = 32,
     device: str = "cuda",
     position: str = "last",
-    fallback_contrast: bool = False,
     fallback_seed: int = 0,
     fallback_max_draws: int = 20,
 ) -> dict:
@@ -194,17 +182,15 @@ def run_patching(
     Returns a dict with the clean/corrupted responses, the kept mask, the
     filter counts and the two baselines.
     """
-    if position not in ("last", "last_unaligned", "first_diff"):
-        raise ValueError(f"position must be 'last', 'last_unaligned' or 'first_diff', "
-                         f"not {position!r}")
+    if position not in ("last", "last_unaligned"):
+        raise ValueError(f"position must be 'last' or 'last_unaligned', not {position!r}")
     model.eval()
     pad_id = tokenizer.pad_token_id if tokenizer.pad_token_id is not None else tokenizer.eos_token_id
     targets = _hook_targets(model, build_model_config(model)["family"])
 
     # Stage 1
     n = len(items)
-    ks = [it["k"] if it.get("k") is not None else k_for_item(tokenizer, it["y"], it["y_prime"])
-          for it in items]
+    ks = [int(it["k"]) for it in items]
     clean_resps = greedy_decode_fixed_k(model, tokenizer, [it["x"] for it in items], ks,
                                         batch_size=decode_batch_size, device=device)
     x_toks = [tokenizer(it["x"], add_special_tokens=True)["input_ids"] for it in items]
@@ -231,57 +217,47 @@ def run_patching(
     # one, for at most ``fallback_max_draws`` decodes per item.  Responses are
     # cached by (prompt index, K), so a candidate already decoded at the same K
     # (e.g. as another item's clean prompt) costs nothing to check.
-    if fallback_contrast:
-        rng = np.random.default_rng(fallback_seed)
-        by_len = defaultdict(list)
-        for j, toks in enumerate(x_toks):
-            by_len[len(toks)].append(j)
-        cache = {(j, ks[j]): clean_resps[j] for j in range(n)}
-        queues = {}
-        for i in range(n):
-            if contrast[i] is None:
-                cands = [j for j in by_len[len(x_toks[i])] if items[j]["x"] != items[i]["x"]]
-                if cands:
-                    queues[i] = [cands[t] for t in rng.permutation(len(cands))]
-        draws = defaultdict(int)
-        while queues:
-            # Resolve cached candidates for free; collect one decode per item.
-            pending = {}
-            for i in list(queues):
-                q = queues[i]
-                while q:
-                    j = q[0]
-                    if (j, ks[i]) not in cache:
-                        break
-                    q.pop(0)
-                    x_prime[i], corr_resps[i] = items[j]["x"], cache[(j, ks[i])]
-                    if corr_resps[i] != clean_resps[i]:
-                        contrast[i] = "fallback"
-                        break
-                if contrast[i] is not None or not q or draws[i] >= fallback_max_draws:
-                    del queues[i]
-                else:
-                    pending[i] = q.pop(0)
-                    draws[i] += 1
-            if not pending:
-                break
-            todo = sorted({(j, ks[i]) for i, j in pending.items()})
-            for (j, k), resp in zip(todo, greedy_decode_fixed_k(
-                    model, tokenizer, [items[j]["x"] for j, _ in todo], [k for _, k in todo],
-                    batch_size=decode_batch_size, device=device)):
-                cache[(j, k)] = resp
-            for i, j in pending.items():
-                queues[i].insert(0, j)  # checked against the cache next round
+    rng = np.random.default_rng(fallback_seed)
+    by_len = defaultdict(list)
+    for j, toks in enumerate(x_toks):
+        by_len[len(toks)].append(j)
+    cache = {(j, ks[j]): clean_resps[j] for j in range(n)}
+    queues = {}
+    for i in range(n):
+        if contrast[i] is None:
+            cands = [j for j in by_len[len(x_toks[i])] if items[j]["x"] != items[i]["x"]]
+            if cands:
+                queues[i] = [cands[t] for t in rng.permutation(len(cands))]
+    draws = defaultdict(int)
+    while queues:
+        # Resolve cached candidates for free; collect one decode per item.
+        pending = {}
+        for i in list(queues):
+            q = queues[i]
+            while q:
+                j = q[0]
+                if (j, ks[i]) not in cache:
+                    break
+                q.pop(0)
+                x_prime[i], corr_resps[i] = items[j]["x"], cache[(j, ks[i])]
+                if corr_resps[i] != clean_resps[i]:
+                    contrast[i] = "fallback"
+                    break
+            if contrast[i] is not None or not q or draws[i] >= fallback_max_draws:
+                del queues[i]
+            else:
+                pending[i] = q.pop(0)
+                draws[i] += 1
+        if not pending:
+            break
+        todo = sorted({(j, ks[i]) for i, j in pending.items()})
+        for (j, k), resp in zip(todo, greedy_decode_fixed_k(
+                model, tokenizer, [items[j]["x"] for j, _ in todo], [k for _, k in todo],
+                batch_size=decode_batch_size, device=device)):
+            cache[(j, k)] = resp
+        for i, j in pending.items():
+            queues[i].insert(0, j)  # checked against the cache next round
     kept_idx = [i for i in range(n) if contrast[i] is not None]
-    read_pos: List[Optional[int]] = [None] * n
-    if position == "first_diff":
-        for i in kept_idx:
-            xp = tokenizer(x_prime[i], add_special_tokens=True)["input_ids"]
-            m = next((j for j, (u, v) in enumerate(zip(x_toks[i], xp)) if u != v), None)
-            if m is None:
-                raise ValueError(f"item {i}: prompt and contrast share all "
-                                 f"{min(len(x_toks[i]), len(xp))} leading tokens")
-            read_pos[i] = m
     info = {
         "clean_responses": clean_resps,
         "corrupted_responses": corr_resps,
@@ -360,11 +336,8 @@ def run_patching(
         corr_caps = cap_corr.captures
 
         for i in range(e - s):
-            if position == "first_diff":
-                c_pos = r_pos = read_pos[kept_idx[s + i]]
-            else:
-                c_pos = cc_pl[s + i] - 1
-                r_pos = rc_pl[s + i] - 1
+            c_pos = cc_pl[s + i] - 1
+            r_pos = rc_pl[s + i] - 1
             layers = []
             for li in range(n_layers):
                 grad = corr_caps[li].grad

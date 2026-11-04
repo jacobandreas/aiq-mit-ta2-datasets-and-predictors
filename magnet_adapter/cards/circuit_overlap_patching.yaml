@@ -23,8 +23,8 @@ description: |
   the last prompt token for cross_lingual and arithmetic_by_skill (as in the
   reference) and, for arithmetic_by_format and EWOK, whose prompts often
   tokenize to different lengths, at each prompt's own last token without the
-  reference's same-length requirement.  arithmetic_parametric items whose swapped problem divides by zero
-  or is non-integer have no counterfactual.
+  reference's same-length requirement.  arithmetic_parametric items whose
+  swapped problem divides by zero or is non-integer have no counterfactual.
 
   Two changes from the reference: K, the number of answer tokens decoded and
   scored, is the token length of the model's own completion of x (the
@@ -36,11 +36,9 @@ description: |
   The reference circuit S is the top 1% of units of the mean attribution over
   train items (the symbolic-format train items for cross_lingual, as in the
   reference); each test item's score is its attribution summed over S.
-  Items still unscored (no length-matched prompt gives a different answer) get the median score; the `*_kept` AUCs in the results cover only the scored items.
-
-  The token prob baseline scores the model's own completion.  The
-  combination averages the two predictors' rank percentiles; items circuit
-  overlap could not score take the token prob percentile alone.  Splits:
+  Items still unscored (no length-matched prompt gives a different answer)
+  get the median score; the `*_kept` AUCs in the results cover only the
+  scored items.  No gold answer is used anywhere.  Splits:
 
   - arithmetic_fixed/cross_lingual: english+symbolic → spanish+italian
   - arithmetic_parametric/arithmetic_by_format: symbolic+english → italian+chinese
@@ -146,18 +144,12 @@ kwdagger:
           models_root: '/raid/lingo/models'
           k_fraction: 0.01
           batch_size: 4
-          answer: 'completion'
-          method: 'patching'
           counterfactuals_dpath: './magnet_adapter/counterfactuals'
           reference_id_regex: null
           position: null
-          # K = token length of the model's own completion (the reference's
-          # gold-length K leaks label information).
-          k_source: 'completion'
           # Items with no usable counterfactual are contrasted with a random
           # length-matched prompt from the same split, redrawn (up to 20
           # decodes) until the model's answer differs.
-          fallback_contrast: 'true'
           fallback_max_draws: 20
           # The reference loads models in float16.
           dtype: 'float16'
