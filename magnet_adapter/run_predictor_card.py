@@ -29,7 +29,7 @@ Usage:
         --helm_suite_path ./benchmark_output/runs/suite_2 \\
         --split_config cross_lingual \\
         --model huggingface/Qwen3-4B \\
-        --models_root /raid/lingo/models \\
+        --model_path Qwen/Qwen3-4B \\
         --counterfactuals_dpath ./magnet_adapter/counterfactuals \\
         --results_fpath results.json
 """
@@ -82,8 +82,9 @@ def main() -> None:
                         help="Split to evaluate; needs <split> and <split>_train runs")
     parser.add_argument("--model",             required=True,
                         help="HELM model id to evaluate (run_spec.adapter_spec.model)")
-    parser.add_argument("--models_root",       default="",
-                        help="Local root for model weights (default: load from HF Hub)")
+    parser.add_argument("--model_path",        default="",
+                        help="HF Hub id or local directory for the weights "
+                             "(default: the HELM model id)")
     parser.add_argument("--k_fraction",        type=float, default=0.01,
                         help="Top-K fraction for circuit overlap (default: 0.01)")
     parser.add_argument("--batch_size",        type=int,   default=4,
@@ -141,7 +142,7 @@ def main() -> None:
     # ── Run predictor ─────────────────────────────────────────────────────────
     predictor = CircuitOverlapInstancePredictor(
         counterfactuals_fpath=counterfactuals_fpath,
-        models_root=args.models_root,
+        model_path=args.model_path,
         k_fraction=args.k_fraction,
         batch_size=args.batch_size,
         reference_id_regex=args.reference_id_regex,

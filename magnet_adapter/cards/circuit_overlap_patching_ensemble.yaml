@@ -1,6 +1,6 @@
 # KWDagger recipe card; run with `magnet evaluate_new`:
 #
-#   cd /raid/lingo/jda/code/darpa3
+#   cd <this repo>
 #   PYTHONPATH=. magnet evaluate_new magnet_adapter/cards/circuit_overlap_patching_ensemble.yaml \
 #       --output_path=./evaluation_runs_kwdagger --backend=serial
 #
@@ -52,7 +52,7 @@ links:
     url: "https://github.com/jacobandreas/aiq-mit-ta2-datasets-and-predictors"
     type: "software"
   - title: "arithmetic_fixed, arithmetic_parametric and world_modeling datasets"
-    url: "https://github.com/jacobandreas/aiq-mit-ta2"
+    url: "https://github.com/AIQ-Kitware/aiq-mit-ta2"
     type: "dataset"
   - title: "EWOK-CORE 1.0"
     url: "https://huggingface.co/datasets/ewok-core/ewok-core-1.0"
@@ -119,12 +119,13 @@ kwdagger:
   pipeline:
     nodes:
       run_circuit_overlap:
-        executable: '/raid/lingo/jda/anaconda3/envs/darpa3-helm/bin/python -u magnet_adapter/run_predictor_card.py'
+        executable: 'python -u magnet_adapter/run_predictor_card.py'
         algo_params:
           helm_suite_path: './benchmark_output/runs/suite_2'
           split_config: null
           model: null
-          models_root: '/raid/lingo/models'
+          # Weights for HELM's huggingface/Qwen3-4B (revision 1cfa9a7).
+          model_path: 'Qwen/Qwen3-4B'
           k_fraction: 0.01
           batch_size: 4
           counterfactuals_dpath: './magnet_adapter/counterfactuals'

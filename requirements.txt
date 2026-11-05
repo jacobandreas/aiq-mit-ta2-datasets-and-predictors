@@ -6,7 +6,12 @@ tqdm>=4.65
 pyyaml>=6.0
 scikit-learn>=1.3
 scipy>=1.11
-# ML (only needed on server for model runs)
-# torch>=2.0
-# transformers>=4.40
-# accelerate>=0.28
+# Model runs and the MAGNET cards.  Versions are those used for the
+# self-evaluation (Python 3.11).  The HELM run specs and data come from the
+# aiq_mit_ta2 package (https://github.com/AIQ-Kitware/aiq-mit-ta2), installed
+# separately.
+torch==2.5.1
+transformers==5.12.0
+crfm-helm==0.5.16
+aiq-magnet==0.1.0
+kwdagger==0.4.1

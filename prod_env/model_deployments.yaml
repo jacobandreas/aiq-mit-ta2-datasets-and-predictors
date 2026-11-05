@@ -6,5 +6,5 @@ model_deployments:
     client_spec:
       class_name: helm.clients.huggingface_client.HuggingFaceClient
       args:
-        pretrained_model_name_or_path: /raid/lingo/models/Qwen3-4B
+        pretrained_model_name_or_path: Qwen/Qwen3-4B
         apply_chat_template: false

@@ -9,9 +9,10 @@ Key design notes
 ----------------
 * The model is identified from ``run_spec.adapter_spec.model`` in the eval
   run's run-spec DataFrame.  This is the HuggingFace Hub model ID (e.g.
-  ``meta-llama/Llama-3.2-3B``).  A ``models_root`` constructor argument lets
-  you redirect to a local weights directory (same convention as darpa3's
-  ``--models-root`` flag).
+  ``meta-llama/Llama-3.2-3B``).  A ``model_path`` constructor argument
+  overrides where the weights are loaded from (a HuggingFace Hub id or a
+  local directory), for HELM model names such as ``huggingface/Qwen3-4B``
+  that are not Hub ids.
 
 * The train split is filtered to the same model as the eval run so that the
   reference circuit is built from that model's activations.  If no train rows
@@ -50,7 +51,7 @@ Usage
     suite_path = outputs.suites()[0].path
     predictor = CircuitOverlapInstancePredictor(
         counterfactuals_fpath="magnet_adapter/counterfactuals/arithmetic_fixed.jsonl",
-        models_root="/raid/lingo/models",
+        model_path="Qwen/Qwen3-4B",
         eval_run_selector=r":split_config=cross_lingual,",
     )
     predictor(helm_suites=suite_path)
@@ -90,7 +91,7 @@ _COL_STAT_MEAN      = "per_instance_stats.stats.mean"
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _extract_model_name(run_specs_df: pd.DataFrame, models_root: str) -> str:
+def _extract_model_name(run_specs_df: pd.DataFrame) -> str:
     """
     Return the HuggingFace model ID (or local path) for the run.
 
@@ -106,14 +107,6 @@ def _extract_model_name(run_specs_df: pd.DataFrame, models_root: str) -> str:
                  for kv in name.split(",") if "=" in kv}
         model_id = parts.get("model", name)
 
-    # HELM replaces "/" with "_" in paths; try to restore it.
-    # E.g. "meta-llama_Llama-3-2-3B" → probably won't match, but the raw
-    # adapter_spec.model usually keeps the slash.
-    if models_root:
-        # Try <models_root>/<basename> first (darpa3 convention)
-        local = Path(models_root) / Path(model_id).name
-        if local.exists():
-            return str(local)
     return model_id
 
 
@@ -200,11 +193,9 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
     counterfactuals_fpath : str
         JSONL from magnet_adapter/make_counterfactuals.py giving each
         instance id's counterfactual prompt.
-    models_root : str
-        Optional local directory that mirrors the HuggingFace Hub layout.
-        If ``<models_root>/<model_basename>`` exists it is used instead of
-        downloading from the Hub (same convention as darpa3's
-        ``--models-root`` flag).
+    model_path : str
+        HuggingFace Hub id or local directory to load the weights from.
+        Default: the HELM model id, which works only when it is a Hub id.
     k_fraction : float
         Top-K fraction of neurons used to define the reference circuit "S".
         Default 0.01 (top 1%) matches the original paper's main result.
@@ -239,7 +230,7 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
     def __init__(
         self,
         counterfactuals_fpath: str,
-        models_root: str = "",
+        model_path: str = "",
         k_fraction: float = 0.01,
         batch_size: int = 4,
         dtype: str = "bfloat16",
@@ -259,7 +250,7 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
             insufficient_eval_sample_policy=insufficient_eval_sample_policy,
             **kwargs,
         )
-        self.models_root = models_root
+        self.model_path = model_path
         self.k_fraction = k_fraction
         self.batch_size = batch_size
         self.dtype = dtype
@@ -291,9 +282,8 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
 
         # ── Identify model ────────────────────────────────────────────────
         eval_run_specs = sequestered_test_split.run_specs
-        model_path = _extract_model_name(eval_run_specs, self.models_root)
-        eval_model_id = eval_run_specs[_COL_RUN_SPEC_MODEL].iloc[0] \
-            if _COL_RUN_SPEC_MODEL in eval_run_specs.columns else model_path
+        eval_model_id = _extract_model_name(eval_run_specs)
+        model_path = self.model_path or eval_model_id
 
         print(f"[circuit_overlap_magnet] eval model: {eval_model_id}")
         print(f"[circuit_overlap_magnet] loading weights from: {model_path}")
