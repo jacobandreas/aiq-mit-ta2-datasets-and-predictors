@@ -12,9 +12,10 @@ the train run is ``...:split_config=X_train,model=...`` (X's train items,
 relabelled as test so HELM generates labelled completions for them).
 
 Besides circuit overlap (``auc``), it reports the token prob baseline
-(``token_prob_auc``) and the equal-weight rank average of the two
+(``token_prob_auc``) and a weighted rank average of the two
 (``combined_auc``; circuit overlap enters only for items with their own
-counterfactual), all from one model load, so one KWDagger node serves both the
+counterfactual, with its weight fitted on the train split, see
+``--weight``), all from one model load, so one KWDagger node serves both the
 "nontrivial AUC" card (circuit_overlap_patching.yaml) and the "improves the
 baseline" card (circuit_overlap_patching_ensemble.yaml).
 
@@ -29,7 +30,6 @@ Usage:
         --helm_suite_path ./benchmark_output/runs/suite_2 \\
         --split_config cross_lingual \\
         --model huggingface/Qwen3-4B \\
-        --model_path Qwen/Qwen3-4B \\
         --counterfactuals_dpath ./magnet_adapter/counterfactuals \\
         --results_fpath results.json
 """
@@ -73,6 +73,18 @@ def load_kwdagger_result(node, node_dpath):
     return flat.insert_prefix(node.name, index=1)
 
 
+def _deployment_weights(model: str) -> str:
+    """Weights HELM used for ``model``, from prod_env/model_deployments.yaml."""
+    import yaml
+    fpath = Path("prod_env/model_deployments.yaml")
+    if not fpath.exists():
+        return ""
+    for dep in yaml.safe_load(fpath.read_text())["model_deployments"]:
+        if dep["name"] == model:
+            return dep["client_spec"]["args"].get("pretrained_model_name_or_path", "")
+    return ""
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -84,7 +96,8 @@ def main() -> None:
                         help="HELM model id to evaluate (run_spec.adapter_spec.model)")
     parser.add_argument("--model_path",        default="",
                         help="HF Hub id or local directory for the weights "
-                             "(default: the HELM model id)")
+                             "(default: the model's pretrained_model_name_or_path "
+                             "in prod_env/model_deployments.yaml)")
     parser.add_argument("--k_fraction",        type=float, default=0.01,
                         help="Top-K fraction for circuit overlap (default: 0.01)")
     parser.add_argument("--batch_size",        type=int,   default=4,
@@ -104,6 +117,10 @@ def main() -> None:
                         help="Random length-matched prompts tried per item without a "
                              "usable counterfactual, until the model's answer differs "
                              "(default: 20)")
+    parser.add_argument("--weight",            default="train",
+                        help="Circuit overlap weight in the combination: a number in "
+                             "[0, 1], or 'train' to choose it on the train split "
+                             "(default: train)")
     parser.add_argument("--dtype",             choices=("bfloat16", "float16", "float32"),
                         default="bfloat16", help="Model weight dtype (default: bfloat16)")
     parser.add_argument("--results_fpath",     required=True,
@@ -142,12 +159,13 @@ def main() -> None:
     # ── Run predictor ─────────────────────────────────────────────────────────
     predictor = CircuitOverlapInstancePredictor(
         counterfactuals_fpath=counterfactuals_fpath,
-        model_path=args.model_path,
+        model_path=args.model_path or _deployment_weights(args.model),
         k_fraction=args.k_fraction,
         batch_size=args.batch_size,
         reference_id_regex=args.reference_id_regex,
         position=args.position,
         fallback_max_draws=args.fallback_max_draws,
+        weight=args.weight,
         dtype=args.dtype,
         eval_run_selector=eval_run_selector,
     )
@@ -159,7 +177,7 @@ def main() -> None:
                                  validate="one_to_one")
     actual = merged["actual_mean"].tolist()
     aucs = {name: _compute_auc(merged[name].tolist(), actual)
-            for name in ("circuit_overlap", "token_prob", "combined")}
+            for name in ("circuit_overlap", "token_prob", "combined", "combined_equal")}
     kept = merged["circuit_overlap_kept"].to_numpy(dtype=bool)
     auc_kept = _compute_auc(merged.loc[kept, "circuit_overlap"].tolist(),
                             merged.loc[kept, "actual_mean"].tolist())
@@ -199,6 +217,12 @@ def main() -> None:
         "token_prob_auc": aucs["token_prob"],
         "combined_auc": aucs["combined"],
         "combined_gain": aucs["combined"] - aucs["token_prob"],
+        # Circuit overlap weight w in the combination, the train-split
+        # combined AUC it was chosen by, and the test AUC at w = 0.5.
+        "combined_weight": predictor.weight_info_["weight"],
+        "train_combined_auc": predictor.weight_info_["train_aucs"].get(
+            predictor.weight_info_["weight"]),
+        "combined_equal_auc": aucs["combined_equal"],
         "n_test": len(merged),
         "test_accuracy": float(sum(actual) / len(actual)),
     }
@@ -206,8 +230,9 @@ def main() -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     # Per-item scores, so ensembling can be revisited without recomputing.
     cols = ["prediction_id", "actual_mean", "circuit_overlap", "circuit_overlap_kept",
-            "circuit_overlap_contrast", "token_prob", "combined"]
+            "circuit_overlap_contrast", "token_prob", "combined", "combined_equal"]
     merged[cols].to_csv(out_path.with_name("scores.csv"), index=False)
+    predictor.train_component_scores_.to_csv(out_path.with_name("train_scores.csv"), index=False)
     out_path.write_text(json.dumps(results, indent=2))
     print(f"\nResults written to {out_path}", flush=True)
     print(json.dumps(results, indent=2))

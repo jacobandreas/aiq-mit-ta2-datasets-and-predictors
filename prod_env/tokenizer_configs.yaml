@@ -6,3 +6,17 @@ tokenizer_configs:
         pretrained_model_name_or_path: Qwen/Qwen3-4B
     end_of_text_token: "<|im_end|>"
     prefix_token: ""
+  - name: huggingface/Qwen3-8B
+    tokenizer_spec:
+      class_name: helm.tokenizers.huggingface_tokenizer.HuggingFaceTokenizer
+      args:
+        pretrained_model_name_or_path: Qwen/Qwen3-8B
+    end_of_text_token: "<|im_end|>"
+    prefix_token: ""
+  - name: huggingface/Llama-3.1-8B-Instruct
+    tokenizer_spec:
+      class_name: helm.tokenizers.huggingface_tokenizer.HuggingFaceTokenizer
+      args:
+        pretrained_model_name_or_path: meta-llama/Llama-3.1-8B-Instruct
+    end_of_text_token: "<|eot_id|>"
+    prefix_token: "<|begin_of_text|>"

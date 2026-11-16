@@ -144,6 +144,7 @@ class TokenProbPredictor(BasePredictor):
 
         print(f"  [token_prob] Scoring val items (n={len(val_preds)}) …")
         val_scores = self._score_items(model, tokenizer, val_preds)
+        self.val_scores_ = val_scores
         val_labels = [int(p["correct"]) for p in val_preds]
         self.calibrator_ = fit_isotonic(val_scores, val_labels)
 

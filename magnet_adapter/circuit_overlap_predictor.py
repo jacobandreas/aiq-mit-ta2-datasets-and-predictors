@@ -237,6 +237,7 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
         reference_id_regex: str = "",
         position: str = "last",
         fallback_max_draws: int = 20,
+        weight: str = "train",
         eval_run_selector: Optional[str] = None,
         num_example_runs: int = 1,
         num_eval_samples: int = sys.maxsize,
@@ -262,6 +263,12 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
             raise ValueError(f"position must be 'last' or 'last_unaligned', not {position!r}")
         self.position = position
         self.fallback_max_draws = fallback_max_draws
+        if weight != "train":
+            float(weight)  # validate
+        self.weight = weight
+        # Set by score_items(): the circuit overlap weight in the combination
+        # and the train-split AUC it was chosen by.
+        self.weight_info_ = None
 
         # Set by predict(): per-test-item circuit_overlap / token_prob /
         # combined scores, keyed by magnet.instance_predict_id.
@@ -368,15 +375,21 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
         """Fit on train items and score test items with circuit overlap, the
         token prob baseline, and their combination.
 
-        The combination is the mean of the two scores' within-test-set rank
-        percentiles: equal weight, scale-free, nothing fitted.  Only items
-        scored with their *own* counterfactual contribute circuit overlap
-        (its percentile is over those items); items scored with a fallback
-        contrast, or not at all, take the token prob percentile alone.
-        Unscored items get the median circuit overlap score.
+        The combination is a weighted mean of the two scores' within-set rank
+        percentiles, ``w * rank(circuit overlap) + (1 - w) * rank(token
+        prob)``.  Only items scored with their *own* counterfactual
+        contribute circuit overlap (its percentile is over those items);
+        items scored with a fallback contrast, or not at all, take the token
+        prob percentile alone.  With ``weight="train"``, w is the value on
+        the grid 0, 0.05, ..., 1 that maximizes the combination's AUC on the
+        train items (whose labels the predictor sees); ties go to the w
+        nearest 0.5.  Otherwise ``weight`` is w.  Unscored items get the
+        median circuit overlap score.
         """
         from scipy.stats import rankdata
         from predictors.token_prob.predictor import TokenProbPredictor
+
+        from sklearn.metrics import roc_auc_score
 
         co_scores = self._patching_scores(train_items, test_items, model, tokenizer, device)
         contrast = self.contrast_
@@ -388,22 +401,53 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
         tp = TokenProbPredictor(batch_size=self.batch_size, device=device)
         tp.fit(train_items, model=model, tokenizer=tokenizer)
         tp_scores = np.asarray(tp.predict(test_items, model=model, tokenizer=tokenizer), dtype=float)
+        train_tp = np.asarray(tp.val_scores_, dtype=float)
 
         def _rank(x):
             return (rankdata(np.clip(x, -1e9, 1e9)) - 1) / max(len(x) - 1, 1)
 
-        own = np.array([c == "own" for c in contrast])
-        tp_rank = _rank(tp_scores)
-        combined = tp_rank.copy()
-        if own.any():
-            combined[own] = (_rank(co_scores[own]) + tp_rank[own]) / 2
+        def _combine(co, tp_s, contr, w):
+            own = np.array([c == "own" for c in contr])
+            tp_rank = _rank(tp_s)
+            combined = tp_rank.copy()
+            if own.any():
+                combined[own] = w * _rank(co[own]) + (1 - w) * tp_rank[own]
+            return combined
+
+        # Train-split scores for choosing w.
+        train_co, train_contrast = self.train_scores_, self.train_contrast_
+        train_y = np.array([int(it.get("correct", 0)) for it in train_items])
+        grid = np.round(np.arange(0, 1.0001, 0.05), 2)
+        train_aucs = {}
+        if len(set(train_y)) == 2:
+            for w in grid:
+                train_aucs[float(w)] = float(roc_auc_score(
+                    train_y, _combine(train_co, train_tp, train_contrast, w)))
+        if self.weight == "train":
+            if not train_aucs:
+                raise ValueError("train items are all correct or all wrong; cannot tune w")
+            best = max(train_aucs.values())
+            w = min((v for v, a in train_aucs.items() if a >= best - 1e-12),
+                    key=lambda v: (abs(v - 0.5), v))
+        else:
+            w = float(self.weight)
+        self.weight_info_ = {"weight": w, "train_aucs": train_aucs}
+        self.train_component_scores_ = pd.DataFrame({
+            "id": [it["id"] for it in train_items], "correct": train_y,
+            "circuit_overlap": train_co, "circuit_overlap_contrast": train_contrast,
+            "token_prob": train_tp,
+        })
+        print(f"[circuit_overlap_magnet] combination weight w={w:.2f}"
+              + (f" (train AUC {train_aucs[w]:.4f}; at w=0.5 {train_aucs[0.5]:.4f})"
+                 if train_aucs else ""), flush=True)
         return {
             "circuit_overlap": co_scores,
             "circuit_overlap_kept": co_kept,
             # "own", "fallback" or None (unscored): the contrast each item used.
             "circuit_overlap_contrast": contrast,
             "token_prob": tp_scores,
-            "combined": combined,
+            "combined": _combine(co_scores, tp_scores, contrast, w),
+            "combined_equal": _combine(co_scores, tp_scores, contrast, 0.5),
         }
 
     def _patching_scores(self, train_items, test_items, model, tokenizer, device) -> np.ndarray:
@@ -450,7 +494,22 @@ class CircuitOverlapInstancePredictor(InstancePredictor):
             k_fraction=self.k_fraction, batch_size=self.batch_size, device=device,
             position=self.position, fallback_max_draws=self.fallback_max_draws,
         )
-        co.fit(_patch_items(ref_items), model=model, tokenizer=tokenizer)
+        co.fit(_patch_items(ref_items), model=model, tokenizer=tokenizer, keep_scores=True)
+
+        # Train-item scores (for tuning the combination weight): reference
+        # items are scored against S as it is built; any others (cross_lingual's
+        # non-symbolic train items) need their own patching pass.
+        ref_ids = {it["id"] for it in ref_items}
+        by_id = {it["id"]: (float(s), c) for it, s, c in
+                 zip(ref_items, co.train_scores_, co.fit_info_["contrast"])}
+        others = [it for it in train_items if it["id"] not in ref_ids]
+        if others:
+            other_scores = co.predict(_patch_items(others), model=model, tokenizer=tokenizer)
+            by_id.update({it["id"]: (float(s), c) for it, s, c in
+                          zip(others, other_scores, co.predict_info_["contrast"])})
+        self.train_scores_ = np.array([by_id[it["id"]][0] for it in train_items])
+        self.train_contrast_ = np.array([by_id[it["id"]][1] for it in train_items], dtype=object)
+
         scores = co.predict(_patch_items(test_items), model=model, tokenizer=tokenizer)
         self.contrast_ = np.array(co.predict_info_["contrast"], dtype=object)
         return scores

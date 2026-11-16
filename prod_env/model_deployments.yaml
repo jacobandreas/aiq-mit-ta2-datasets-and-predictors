@@ -8,3 +8,21 @@ model_deployments:
       args:
         pretrained_model_name_or_path: Qwen/Qwen3-4B
         apply_chat_template: false
+  - name: huggingface/Qwen3-8B
+    model_name: huggingface/Qwen3-8B
+    tokenizer_name: huggingface/Qwen3-8B
+    max_sequence_length: 131072
+    client_spec:
+      class_name: helm.clients.huggingface_client.HuggingFaceClient
+      args:
+        pretrained_model_name_or_path: Qwen/Qwen3-8B
+        apply_chat_template: false
+  - name: huggingface/Llama-3.1-8B-Instruct
+    model_name: huggingface/Llama-3.1-8B-Instruct
+    tokenizer_name: huggingface/Llama-3.1-8B-Instruct
+    max_sequence_length: 131072
+    client_spec:
+      class_name: helm.clients.huggingface_client.HuggingFaceClient
+      args:
+        pretrained_model_name_or_path: meta-llama/Llama-3.1-8B-Instruct
+        apply_chat_template: false

@@ -36,15 +36,22 @@ class PatchingCircuitOverlapPredictor:
         self.reference_: Optional[np.ndarray] = None   # [n_layers, intermediate_size]
         self.ref_topk_: Optional[np.ndarray] = None    # flat indices of S
         self.fit_info_: Optional[dict] = None
+        self.train_scores_: Optional[np.ndarray] = None  # sum_on_S per train item
         # Set after predict()
         self.predict_info_: Optional[dict] = None
 
-    def fit(self, train_items: List[dict], model, tokenizer) -> None:
+    def fit(self, train_items: List[dict], model, tokenizer, keep_scores: bool = False) -> None:
+        """Build S.  With ``keep_scores``, also score each train item against S
+        (``train_scores_``, NaN for unscored items); this keeps every train
+        item's attribution in memory (float16) until S is known."""
         total = {"sum": None, "n": 0}
+        kept_attrs = {}
 
-        def consume(_idx, attr):
+        def consume(idx, attr):
             total["sum"] = attr.astype(np.float64) if total["sum"] is None else total["sum"] + attr
             total["n"] += 1
+            if keep_scores:
+                kept_attrs[idx] = attr.astype(np.float16)
 
         print(f"  [patching] train items: {len(train_items)}", flush=True)
         self.fit_info_ = run_patching(model, tokenizer, train_items, consume,
@@ -56,6 +63,10 @@ class PatchingCircuitOverlapPredictor:
         self.reference_ = (total["sum"] / total["n"]).astype(np.float32)
         k = max(1, int(round(self.k_fraction * self.reference_.size)))
         self.ref_topk_ = topk_indices_abs(self.reference_, k)
+        if keep_scores:
+            self.train_scores_ = np.full(len(train_items), np.nan)
+            for idx, attr in kept_attrs.items():
+                self.train_scores_[idx] = float(attr.ravel()[self.ref_topk_].astype(np.float64).sum())
         print(f"  [patching] reference circuit: {total['n']} items, K={k} units", flush=True)
 
     def predict(self, test_items: List[dict], model, tokenizer) -> np.ndarray:

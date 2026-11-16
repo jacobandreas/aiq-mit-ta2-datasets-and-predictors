@@ -57,6 +57,7 @@ submitter:
 
 tags:
   - qwen
+  - llama
   - predictor
   - circuit_overlap
   - attribution_patching
@@ -141,8 +142,6 @@ kwdagger:
           helm_suite_path: './benchmark_output/runs/suite_2'
           split_config: null
           model: null
-          # Weights for HELM's huggingface/Qwen3-4B (revision 1cfa9a7).
-          model_path: 'Qwen/Qwen3-4B'
           k_fraction: 0.01
           batch_size: 4
           counterfactuals_dpath: './magnet_adapter/counterfactuals'
@@ -152,6 +151,9 @@ kwdagger:
           # length-matched prompt from the same split, redrawn (up to 20
           # decodes) until the model's answer differs.
           fallback_max_draws: 20
+          # Circuit overlap weight in the combination with token prob, chosen
+          # per split to maximize the combined AUC on the train items.
+          weight: 'train'
           # The reference loads models in float16.
           dtype: 'float16'
         out_paths:
@@ -162,6 +164,8 @@ kwdagger:
   matrix:
     run_circuit_overlap.model:
       - huggingface/Qwen3-4B
+      - huggingface/Qwen3-8B
+      - huggingface/Llama-3.1-8B-Instruct
     run_circuit_overlap.split_config:
       - arithmetic_by_skill
       - cross_lingual

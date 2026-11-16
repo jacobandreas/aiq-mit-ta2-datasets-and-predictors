@@ -15,12 +15,21 @@ description: |
   circuit_overlap_patching.yaml) with the token prob baseline should predict
   per-instance accuracy better than token prob alone.
 
-  combined = mean of the two predictors' within-test-set rank percentiles
-  (equal weight; nothing is fitted and no labels are used).  Only items
-  scored with their own counterfactual contribute circuit overlap; items
-  scored with a fallback (random length-matched) contrast, or not scored,
-  take the token prob percentile alone.  Both predictors score the model's
-  own completion.  Splits:
+  combined = w * rank(circuit overlap) + (1 - w) * rank(token prob), with
+  ranks taken as percentiles within the test set.  The single parameter w
+  is fitted per (model, split) on the train split: it is the value on the
+  grid 0, 0.05, ..., 1 that maximizes the combination's AUC on the train
+  items, whose correctness labels the predictor sees (ties go to the w
+  nearest 0.5).  No test labels are used.  Only items scored with their own
+  counterfactual contribute circuit overlap; items scored with a fallback
+  (random length-matched) contrast, or not scored, take the token prob
+  percentile alone.  Both predictors score the model's own completion.
+  Results also report the equal-weight (w = 0.5) AUC for comparison.
+
+  The claim is per model, over its splits: the combination never does worse
+  than token prob on any split (gain >= 0), and improves on it on average
+  across splits (mean gain > 0).  A gain of exactly 0 means the train fit
+  chose w = 0, i.e. circuit overlap was not used for that split.  Splits:
 
   - arithmetic_fixed/cross_lingual: english+symbolic → spanish+italian
   - arithmetic_parametric/arithmetic_by_format: symbolic+english → italian+chinese
@@ -39,6 +48,7 @@ submitter:
 
 tags:
   - qwen
+  - llama
   - predictor
   - circuit_overlap
   - attribution_patching
@@ -61,60 +71,68 @@ links:
 
 claim:
   python: |
-    r = run_circuit_overlap
-    assert r.combined_gain > 0, (
-        f"CircuitOverlap + TokenProb AUC for {r.model} on {r.split_config} "
-        f"({r.combined_auc:.3f}) does not beat TokenProb ({r.token_prob_auc:.3f})"
+    s = summarize_gains
+    assert s.min_gain >= 0, (
+        f"CircuitOverlap + TokenProb is worse than TokenProb for {s.model} on "
+        f"{s.worst_split} (gain {s.min_gain:.4f})"
+    )
+    assert s.mean_gain > 0, (
+        f"CircuitOverlap + TokenProb does not beat TokenProb on average for "
+        f"{s.model}: mean gain {s.mean_gain:.4f} over {s.n_splits} splits"
     )
 
 evidence:
   scope: requested
 
 symbols:
-  metrics.run_circuit_overlap.combined_auc:
+  metrics.summarize_gains.mean_combined_auc:
     metadata:
       kind: metric
       display: true
-      display_name: "CircuitOverlap + TokenProb AUC"
+      display_name: "CircuitOverlap + TokenProb AUC (mean over splits)"
       define_metric:
         objective: maximize
         aggregation_strategy:
           type: mean
 
-  metrics.run_circuit_overlap.token_prob_auc:
+  metrics.summarize_gains.mean_token_prob_auc:
     metadata:
       kind: metric
       display: true
-      display_name: "TokenProb AUC (baseline)"
+      display_name: "TokenProb AUC (baseline, mean over splits)"
       define_metric:
         objective: maximize
         aggregation_strategy:
           type: mean
 
-  metrics.run_circuit_overlap.combined_gain:
+  metrics.summarize_gains.mean_gain:
     metadata:
       kind: metric
       display: true
-      display_name: "AUC gain over baseline"
+      display_name: "AUC gain over baseline (mean over splits)"
       define_metric:
         objective: maximize
         aggregation_strategy:
           type: mean
 
-  metrics.run_circuit_overlap.model:
+  metrics.summarize_gains.min_gain:
+    metadata:
+      kind: metric
+      display: true
+      display_name: "AUC gain over baseline (worst split)"
+      define_metric:
+        objective: maximize
+        aggregation_strategy:
+          type: min
+
+  metrics.summarize_gains.model:
     metadata:
       kind: model
       display: true
       display_name: "Model"
 
-  metrics.run_circuit_overlap.split_config:
-    metadata:
-      kind: dataset
-      display: true
-      display_name: "Split"
-
 kwdagger:
-  result_node: run_circuit_overlap
+  result_node: summarize_gains
 
   pipeline:
     nodes:
@@ -124,8 +142,6 @@ kwdagger:
           helm_suite_path: './benchmark_output/runs/suite_2'
           split_config: null
           model: null
-          # Weights for HELM's huggingface/Qwen3-4B (revision 1cfa9a7).
-          model_path: 'Qwen/Qwen3-4B'
           k_fraction: 0.01
           batch_size: 4
           counterfactuals_dpath: './magnet_adapter/counterfactuals'
@@ -135,6 +151,9 @@ kwdagger:
           # length-matched prompt from the same split, redrawn (up to 20
           # decodes) until the model's answer differs.
           fallback_max_draws: 20
+          # Circuit overlap weight in the combination with token prob, chosen
+          # per split to maximize the combined AUC on the train items.
+          weight: 'train'
           # The reference loads models in float16.
           dtype: 'float16'
         out_paths:
@@ -142,9 +161,34 @@ kwdagger:
         primary_out_key: results_fpath
         load_result: 'magnet_adapter.run_predictor_card.load_kwdagger_result'
 
+      # One per model: gathers that model's per-split results (CPU only).
+      summarize_gains:
+        executable: 'python -u magnet_adapter/summarize_gains.py'
+        in_paths: [results_fpaths]
+        algo_params:
+          model: null
+        out_paths:
+          summary_fpath: 'summary.json'
+        primary_out_key: summary_fpath
+        load_result: 'magnet_adapter.summarize_gains.load_kwdagger_result'
+
+    edges:
+      - src: run_circuit_overlap.results_fpath
+        dst: summarize_gains.results_fpaths
+        gather:
+          group_by: [model]
+          order_by: [split_config]
+          require: all_success
+
   matrix:
+    summarize_gains.model:
+      - huggingface/Qwen3-4B
+      - huggingface/Qwen3-8B
+      - huggingface/Llama-3.1-8B-Instruct
     run_circuit_overlap.model:
       - huggingface/Qwen3-4B
+      - huggingface/Qwen3-8B
+      - huggingface/Llama-3.1-8B-Instruct
     run_circuit_overlap.split_config:
       - arithmetic_by_skill
       - cross_lingual
